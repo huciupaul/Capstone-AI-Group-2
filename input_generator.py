@@ -35,6 +35,8 @@ u_field_all = np.zeros((n_stored, 48, 48, 2))  # Assuming u_field is (48, 48, 2)
 
 
 # Simulate :: generate results
+start_time = time.time()
+
 store_idx = 0
 for step, t in enumerate(np.arange(0.0, 12000.0, dt)):
     u_hat += dt * ks.dynamics(u_hat)
@@ -45,6 +47,9 @@ for step, t in enumerate(np.arange(0.0, 12000.0, dt)):
         u_field_all[store_idx] = ks.fourier_to_phys(u_hat, nref=48)  # Compute physical field
         store_idx += 1
 
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Simulation loop execution time: {elapsed_time:.2f} seconds")
 
 def write_h5(path: str, velocity: np.ndarray, kinetic_energy: np.ndarray, dissipation_rates: np.ndarray) -> None:
     with h5py.File(path, 'w') as hf:
