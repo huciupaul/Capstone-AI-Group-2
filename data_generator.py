@@ -1,4 +1,5 @@
-#WARNING: the data file is too big for GitHub. Paul has it locally on his computer. DO NOT commit any cahnges to GitHub - it will give bunch of errors
+#WARNING: the data file is too big for GitHub. DO NOT commit any cahnges to GitHub - it will give bunch of errors
+# the data file path: TEAMS -> DOCUMENTS -> DATA FROM CODING -> GENERATED_DATA.H5
 
 
 import numpy as np
