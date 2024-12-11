@@ -1,3 +1,6 @@
+#WARNING: the data file is too big for GitHub. Paul has it locally on his computer. DO NOT commit any cahnges to GitHub - it will give bunch of errors
+
+
 import numpy as np
 from kolsol.numpy.solver import KolSol
 import matplotlib.pyplot as plt
