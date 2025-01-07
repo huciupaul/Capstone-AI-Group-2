@@ -24,7 +24,7 @@ import h5py
 def find_extr_paths_loop(P,local_path, cluster_from, ready_paths, extr_clusters):
     ''' Inner function for finding loops leading to given extreme cluster
 
-    :param P: sparse deflated probability matrix
+    :param P: sparse deflated probability matrix (represents transitions between clusters)
     :param local_path: local path leading to extreme cluster (first element is the extreme cluster)
     :param cluster_from: cluster from which we will continue looking into the probability matrix
     :param ready_paths: vector of ready paths, when a full circle had been made (from extreme cluster y back to extreme
@@ -49,6 +49,9 @@ def find_extr_paths_loop(P,local_path, cluster_from, ready_paths, extr_clusters)
                 ready_paths.append(tuple(local_path))
     return ready_paths
 
+#The function aims to find paths (loops or closed paths) that either return to extreme clusters or pass through clusters already present on the path. These paths are then returned in the form of tuples.
+
+
 def find_extr_paths(extr_clusters,P):
     '''Outer function for finding loops leading to given extreme cluster
 
@@ -62,7 +65,7 @@ def find_extr_paths(extr_clusters,P):
 
         clusters_from = P.col[P.row==extr_cluster] # look at all the possible clusters as the next step on the path
         clusters_from = np.delete(clusters_from,np.where(clusters_from==extr_cluster))   # exclude looping inside oneself
-
+        #For each neighboring cluster, it starts a new path from the extreme cluster.
         for cluster_from in clusters_from:
             if cluster_from not in extr_clusters:   # if next cluster is not extreme
                 local_path = [extr_cluster, cluster_from]  # start/restart path
@@ -72,6 +75,8 @@ def find_extr_paths(extr_clusters,P):
                 final_paths.extend(ready_paths)
     return final_paths
 
+
+#The prob_to_extreme function computes the maximum probability, minimum average time, and shortest path from a given cluster to an extreme event in the network.
 def prob_to_extreme(cluster_nr,paths, T, P, clusters):
     '''Function to find the maximum probability, minimum average time  and shortest path to an extreme event
 
@@ -86,6 +91,7 @@ def prob_to_extreme(cluster_nr,paths, T, P, clusters):
     time = T
     length = np.size(P)
 
+    
     if clusters[cluster_nr].is_extreme ==2: # if the cluster is extreme
         prob = 1    # all values are irrelevant
         time = 0
@@ -97,9 +103,11 @@ def prob_to_extreme(cluster_nr,paths, T, P, clusters):
             loc_path = np.asarray(paths[i])
             if cluster_nr in loc_path:     # find path with our cluster
                 # take into account only part of path to our cluster
+                #If the current cluster (cluster_nr) is part of the path, find the index of cluster_nr in loc_path and truncate the path to include only the part up to and including cluster_nr.
                 loc_end = np.where(loc_path==cluster_nr)[0]
                 loc_end = loc_end[0]
                 loc_path = loc_path[0:loc_end+1]
+                #For each step in the truncated path (excluding the last step)
                 for j in range(len(loc_path)):  # loop through the whole length of the path
                     if j!=len(loc_path)-1:  # skip last step
                         temp = P.data[P.col[P.row == loc_path[j]]] # find probability of transitioning from cluster j to ,cluster j+1 on the path
@@ -324,10 +332,13 @@ def plot_cluster_statistics(clusters, T, min_prob=None, min_time=None, length=No
                 writer.writerow(csv_data)
     return 1
 
+
+#The function backwards_avg_time_to_extreme analyzes time series data to calculate the average time it takes for a system to transition from a precursor cluster (denoted as value 1) to an extreme cluster (denoted as value 2). 
+# It also counts various instances related to extreme events and precursors, including cases where an extreme event happens with or without a precursor and where a precursor occurs without an extreme event.
 def backwards_avg_time_to_extreme(is_extreme,dt):
     ''' For analyzing time series - Finds average time of transitioning from the first instance of precursor cluster to
      extreme cluster, looking backwards in time from extreme event
-
+ 
     :param is_extreme: vector defining which clusters are extreme (value 2) and which are precursors (value 1)
     :param dt: time step
     :param clusters: all defined clusters with their properties
@@ -346,7 +357,7 @@ def backwards_avg_time_to_extreme(is_extreme,dt):
     for i in range(len(extreme_events_t)-1):    # loop through all extreme events
         # we are looking only at the first one step of each instance
         # isolate first case
-        if i==0 or (extreme_events_t[i+1]==extreme_events_t[i]+1 and extreme_events_t[i-1]!=extreme_events_t[i]-1):
+        if i==0 or (extreme_events_t[i+1]==extreme_events_t[i]+1 and extreme_events_t[i-1]!=extreme_events_t[i]-1): #This checks whether the current extreme event (extreme_events_t[i]) is the first one or if it is the first step of an extreme event (not preceded by another extreme event)
             temp_ee_t = extreme_events_t[i] # time step of first extreme step
             if is_extreme[temp_ee_t-1]!=1:
                 instances_extreme_no_precursor+=1
