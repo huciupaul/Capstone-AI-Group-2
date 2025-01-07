@@ -46,6 +46,7 @@ def partition(network, extreme_nodes, refine=True):
     nx.relabel_nodes(network, name_to_label, copy=False)
 
     B = modularity.get_base_modularity_matrix(network)
+    # Initializes a queue with initial community indices [0, 1]. These represent the first two communities to be processed
     divisible_community = deque([0, 1])
     
     # Initialize the community dictionary
@@ -67,7 +68,7 @@ def partition(network, extreme_nodes, refine=True):
         comm_index = divisible_community.popleft()
         
         #print("Processing community:", comm_index)
-        
+         #Attempts to split the nodes of comm_index into two groups (g1_nodes and the rest).
         g1_nodes, comm_nodes = _divide._divide(network, community_dict, comm_index, B, refine)
         if g1_nodes is None:
             ## indivisible, go to next
@@ -78,11 +79,13 @@ def partition(network, extreme_nodes, refine=True):
         
         #### Get the subgraphs (sub-communities)
         #print("g1_nodes: ", g1_nodes)
+        #Creates two subgraphs, g1 and g2, representing the two new communities.
         g1 = network.subgraph(g1_nodes)
         g2 = network.subgraph(set(comm_nodes).difference(set(g1_nodes)))
         parent = "%d"%comm_index
 
         ## add g1, g2 to tree and divisible list
+        #Assigns a new community index (comm_counter) to g1 nodes and adds it to the queue.
         comm_counter += 1
         divisible_community.append(comm_counter)
         ## update community
@@ -98,6 +101,7 @@ def partition(network, extreme_nodes, refine=True):
     # corrects partition numbering to be in 0,...,M-1 (matches python implementation
     #   of the Louvain algorithm), and restore names of nodes
     # old to new numbering
+    #Creates a mapping from old community indices to consecutive integers starting from 0.
     old_to_new = {}
     new_val = 0
     for v in set(community_dict.values()):
@@ -109,17 +113,18 @@ def partition(network, extreme_nodes, refine=True):
     optimal_partition = {}
     for k in community_dict:
         optimal_partition[k] = old_to_new[community_dict[k]]
-    
+    #Identifies the unique communities associated with the provided extreme_nodes.
     extreme_communities = []
     for key, value in optimal_partition.items():
         if key in extreme_nodes:
             extreme_communities.append(value)
-            
+
+    #Removes duplicates from the list of extreme communities.  
     extreme_communities = np.unique(np.array(extreme_communities))
     
     #print("These are the indentified extreme communities: ", extreme_communities)
 
     # Create a dictionary to map the original node names to community indices
     #optimal_partition = {name: community_dict[name] for name in network.nodes()}
-
+    #Outputs the final node-to-community mapping and the identified extreme communities.
     return optimal_partition, extreme_communities
