@@ -4,7 +4,7 @@ import numpy as np
 from autoencoder import cae_model
 from helpers import *
 import time
-from visualization import plot_training_curve
+from visualization import save_mse_plot
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
 
@@ -13,7 +13,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     """
 
     # autoencoded field
-    decoded  = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
+    decoded = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
 
     # loss with respect to the data
     loss = Loss_Mse(inputs, decoded)
@@ -24,12 +24,12 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
         # appending lists is done by plus sign
         varss = [] # + Dense.trainable_weights
         for enc_mod in enc_mods:
-            varss  += enc_mod.trainable_weights
+            varss += enc_mod.trainable_weights
         for dec_mod in dec_mods:
-            varss +=  dec_mod.trainable_weights
+            varss += dec_mod.trainable_weights
 
         with tf.GradientTape() as tape:
-            decoded  = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
+            decoded = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
             loss = Loss_Mse(inputs, decoded)
         grads = tape.gradient(loss, varss)
         optimizer.apply_gradients(zip(grads, varss))
@@ -81,10 +81,11 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
             loss_0 += loss
 
         # save train loss
-        tloss_plot[epoch] = loss_0.numpy() / train_batches
+        # tloss_plot[epoch] = loss_0.numpy() / train_batches
+        tloss_plot[epoch] = loss_0 / train_batches
 
         # every N epochs checks the convergence of the training loss and val loss
-        if (epoch % N_check == 0):
+        if epoch % N_check == 0:
 
             # Compute Validation Loss
             loss_val = 0
@@ -93,7 +94,8 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
                 loss_val += loss
 
             # Save validation loss
-            vloss_plot[epoch] = loss_val.numpy() / val_batches
+            # vloss_plot[epoch] = loss_val.numpy() / val_batches
+            vloss_plot[epoch] = loss_val / val_batches
 
             # Decreases the learning rate if the training loss is not going down with respect to
             # N_lr epochs before
@@ -133,6 +135,8 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
             t = time.time()  # Reset time after each epoch
 
         if (epoch % N_plot == 0) and epoch != 0:  # Plot every N_plot epochs
-            plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
+            # plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
+            save_path = f'mse_plot_{epoch}.h5'
+            save_mse_plot(vloss_plot, tloss_plot, save_path)
 
     return enc_mods, dec_mods

@@ -1,24 +1,6 @@
 import tensorflow as tf
 
 
-def cae_model(inputs, enc_mods, dec_mods, is_train=False):
-    '''
-    Multiscale autoencoder, taken from Hasegawa 2020. The contribution of the CNNs at different
-    scales are simply summed.
-    '''
-
-    # sum of the contributions of the different CNNs
-    encoded = 0
-    for enc_mod in enc_mods:
-        encoded += enc_mod(inputs, training=is_train)
-
-    decoded = 0
-    for dec_mod in dec_mods:
-        decoded += dec_mod(encoded, training=is_train)
-
-    return encoded, decoded
-
-
 def periodic_padding(image, padding=1, asym=False):
     '''
     Create a periodic padding (same of np.pad('wrap')) around the image,
@@ -74,11 +56,11 @@ class PerPad2D(tf.keras.layers.Layer):
 
 
 def create_enc_mods(N_lat):
-    last_conv_dep = 1  # output depth of last conv layer, if we want to include dissipation rate and vorticity, increase this number
+    last_conv_dep = 1  # output depth of last conv layer. To include D or vorticity, increase
     n_fil = [6, 12, 24, last_conv_dep]  # number of filters encoder
-    N_parallel = 3  # number of parallel CNNs for multiscale
+    n_parallel = 3  # number of parallel CNNs for multiscale
     ker_size = [(3, 3), (5, 5), (7, 7)]  # kernel sizes
-    N_layers = 4  # number of layers in every CNN
+    n_layers = 4  # number of layers in every CNN
     act = 'tanh'  # activation function
 
     pad_enc = 'valid'  # no padding in the conv layer
@@ -87,13 +69,13 @@ def create_enc_mods(N_lat):
     p_fin = [1, 2, 3]  # stride = 1 periodic padding size
 
     # initialize the encoders and decoders with different kernel sizes
-    enc_mods = [None] * (N_parallel)
-    for i in range(N_parallel):
+    enc_mods = [None] * (n_parallel)
+    for i in range(n_parallel):
         enc_mods[i] = tf.keras.Sequential(name='Enc_' + str(i))
 
     # generate encoder layers
-    for j in range(N_parallel):
-        for i in range(N_layers):
+    for j in range(n_parallel):
+        for i in range(n_layers):
 
             # stride=2 padding and conv
             enc_mods[j].add(PerPad2D(padding=p_size[j], asym=True,
@@ -103,7 +85,7 @@ def create_enc_mods(N_lat):
                                                    name='Enc_' + str(j) + '_ConvLayer_' + str(i)))
 
             # stride=1 padding and conv
-            if i < N_layers - 1:
+            if i < n_layers - 1:
                 enc_mods[j].add(PerPad2D(padding=p_fin[j], asym=False,
                                          name='Enc_' + str(j) + '_Add_PerPad1_' + str(i)))
                 enc_mods[j].add(tf.keras.layers.Conv2D(filters=n_fil[i],
@@ -114,32 +96,31 @@ def create_enc_mods(N_lat):
         enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
         enc_mods[j].add(tf.keras.layers.Dense(N_lat, activation='linear', name='Enc_' + str(j) + '_Dense'))
 
-    return enc_mods, ker_size, N_layers
-
+    return enc_mods, ker_size, n_layers
 
 
 def create_dec_mods(conv_out_size, conv_out_shape, p_crop, n_comp):
     n_dec = [24, 12, 6, 3]  # number of filters decoder
-    N_parallel = 3  # number of parallel CNNs for multiscale
+    n_parallel = 3  # number of parallel CNNs for multiscale
     ker_size = [(3, 3), (5, 5), (7, 7)]  # kernel sizes
-    N_layers = 4  # number of layers in every CNN
+    n_layers = 4  # number of layers in every CNN
     act = 'tanh'  # activation function
     p_dec = 1  # padding in the first decoder layer
     pad_dec = 'valid'
     p_fin = [1, 2, 3]  # stride = 1 periodic padding size
 
-    dec_mods = [None] * (N_parallel)
-    for i in range(N_parallel):
+    dec_mods = [None] * (n_parallel)
+    for i in range(n_parallel):
         dec_mods[i] = tf.keras.Sequential(name='Dec_' + str(i))
 
     # generate decoder layers
-    for j in range(N_parallel):
+    for j in range(n_parallel):
 
         # Add fully connected layer first to map latent space to the appropriate dimensions
         dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation='linear', name='Dec_' + str(j) + '_Dense'))
         dec_mods[j].add(tf.keras.layers.Reshape(conv_out_shape, name='Dec_' + str(j) + '_Reshape'))
 
-        for i in range(N_layers):
+        for i in range(n_layers):
 
             # initial padding of latent space
             if i == 0:
@@ -153,7 +134,7 @@ def create_dec_mods(conv_out_size, conv_out_shape, p_crop, n_comp):
                                                             name='Dec_' + str(j) + '_ConvLayer_' + str(i)))
 
             # Convolution with stride=1
-            if i < N_layers - 1:
+            if i < n_layers - 1:
                 dec_mods[j].add(tf.keras.layers.Conv2D(filters=n_dec[i],
                                                        kernel_size=ker_size[j],
                                                        activation=act, padding=pad_dec, strides=1,
@@ -189,6 +170,26 @@ def cae_model(inputs, enc_mods, dec_mods, is_train=False):
     return encoded, decoded
 
 
-def call_decoder(dec_mods):
-    pass
+def enc_model(U, enc_mods):
+    '''
+    This is only the encoder module
+    '''
+
+    encoded = 0
+    for enc_mod in enc_mods:
+        encoded += enc_mod(encoded, training=False)
+
+    return encoded
+
+
+def dec_model(encoded, dec_mods):
+    '''
+    This is only the decoder module
+    '''
+
+    decoded = 0
+    for dec_mod in dec_mods:
+        decoded += dec_mod(encoded, training=False)
+
+    return decoded
 

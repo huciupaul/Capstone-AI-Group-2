@@ -1,6 +1,4 @@
-import os
 import h5py
-from pathlib import Path
 import numpy as np
 
 
@@ -15,6 +13,17 @@ def load_data(path, data_len=12000, downsample=5, transient=200):
     print(f'Data Shape: {U.shape}')
 
     return U
+
+
+def load_encoded_data(path):
+    with h5py.File(path, 'r') as hf:
+        if 'U_enc' in hf:
+            U_enc = hf['U_enc'][:]
+            print(f"Successfully read U_enc from {path}")
+            return U_enc
+        else:
+            raise KeyError(f"Dataset 'U_enc' not found in the file: {path}")
+
 
 def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
     """
@@ -51,7 +60,6 @@ def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
     for k in range(n_batches[2]):
         U_test[k] = U[k + offset_test:n_batches[2]*batch_size + offset_test:n_batches[2]].copy()
 
-
     # clear memory
     del U
 
@@ -60,11 +68,14 @@ def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
     return U_train, U_val, U_test
 
 
-def batch_enc_data(U_all, batch_size):
-    pass
+def batch_data(U, b_size, n_batches):
+    batched_data = np.zeros((n_batches, b_size, U.shape[1:]))
+    for i in range(n_batches):
+        batched_data[i] = U[i*b_size: (i+1)*b_size].copy()
+    del U
+    return batched_data
 
-def batch_dec_data(U_enc, batch_size):
-    pass
+
 
 
 
