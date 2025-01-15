@@ -39,7 +39,7 @@ for i, layer in enumerate(enc_mods[-1].layers):
 dec_mods = create_dec_mods(conv_out_size, conv_out_shape, p_crop, n_comp)
 
 # train the model
-n_epochs = 11
+n_epochs = 500
 enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
 
 # evaluate the model

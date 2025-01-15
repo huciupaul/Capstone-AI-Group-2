@@ -2,7 +2,7 @@ import tensorflow as tf
 from tqdm import trange
 import numpy as np
 from autoencoder import cae_model
-from helpers import *
+from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
 
@@ -50,12 +50,12 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
     old_loss = np.zeros(n_epochs)  # needed to evaluate training loss convergence to update l_rate
     tloss_plot = np.zeros(n_epochs)  # training loss
     vloss_plot = np.zeros(n_epochs)  # validation loss
-    N_check = 1  # each N_check epochs we check convergence and validation loss
-    patience = 20  # if the val_loss has not gone down in the last patience epochs, early stop
+    N_check = 5  # each N_check epochs we check convergence and validation loss
+    patience = 40  # if the val_loss has not gone down in the last patience epochs, early stop
     last_save = patience  # last epoch where the model was saved
 
     # Hyperparameters for changing learning rate
-    N_lr = 5
+    N_lr = 10
     lrate_update = True
     lrate_mult = 0.75
 
@@ -70,7 +70,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
 
         # Incorporate early stopping
         if epoch - last_save > patience:
-            print('Early stopping')
+            print(f'Early stopping at epoch {epoch}')
             break
 
         # Perform gradient descent for all the batches every epoch
