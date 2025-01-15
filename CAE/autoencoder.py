@@ -177,7 +177,7 @@ def enc_model(U, enc_mods):
 
     encoded = 0
     for enc_mod in enc_mods:
-        encoded += enc_mod(encoded, training=False)
+        encoded += enc_mod(U, training=False)
 
     return encoded
 
