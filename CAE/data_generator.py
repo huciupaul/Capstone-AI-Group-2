@@ -17,7 +17,8 @@ np.random.seed(42)
 # instantiate solver
 ks = KolSol(nk=8, nf=4, re=40.0, ndim=2) # nk = no of symmetric wavenumbers   nf = forcing frequency, re=40 fully turbulent flow
 dt = 0.01
-steps = int(12000.0 / dt)
+datalen = 12000
+steps = int(datalen / dt)
 store_interval = 10  # Store every 10 steps
 n_stored = steps // store_interval
 # the timestep to store the resuls is 0.1
@@ -43,7 +44,7 @@ u_field_all = np.zeros((n_stored, 48, 48, 2))  # Assuming u_field is (48, 48, 2)
 start_time = time.time()
 
 store_idx = 0
-for step, t in enumerate(np.arange(0.0, 12000.0, dt)):
+for step, t in enumerate(np.arange(0.0, datalen, dt)):
     u_hat += dt * ks.dynamics(u_hat)
     if step % store_interval == 0:  # Store every 10 steps
         timer[store_idx] = t
