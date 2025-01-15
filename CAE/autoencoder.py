@@ -114,7 +114,7 @@ def create_enc_mods(N_lat):
         enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
         enc_mods[j].add(tf.keras.layers.Dense(N_lat, activation='linear', name='Enc_' + str(j) + '_Dense'))
 
-    return enc_mods, ker_size
+    return enc_mods, ker_size, N_layers
 
 
 

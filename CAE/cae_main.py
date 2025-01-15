@@ -1,6 +1,8 @@
 from autoencoder import *
 # from utils.visualizaton import *
 from train import *
+import numpy as np
+from prepare_data import *
 
 # os.environ["OMP_NUM_THREADS"] = '15' # set cores for numpy
 # os.environ['TF_INTER_OP_PARALLELISM_THREADS'] = '15' # set cores for TF
@@ -8,18 +10,18 @@ from train import *
 
 
 
-# data_path = r"C:\Users\edlyn\Downloads\Generated_data.h5"
+data_path = r"C:\Users\edlyn\Downloads\Generated_data.h5"
 
 # get data
-# U = load_data(data_path)
-# N_x, N_y = U.shape[1:3]
-# U_train, U_val, U_test = split_batch_data(U)
+U = load_data(data_path)
+N_x, N_y = U.shape[1:3]
+U_train, U_val, U_test = split_batch_data(U)
 
-# Re = 40
+Re = 40
 
 p_crop = U_train.shape[2]
 N_lat = 5
-enc_mods, ker_size = create_enc_mods(N_lat)
+enc_mods, ker_size, N_layers = create_enc_mods(N_lat)
 
 #explicitly obtain the size of the latent space
 output = U_train[0]
