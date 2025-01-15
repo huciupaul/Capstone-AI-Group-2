@@ -12,7 +12,13 @@ data_path = r'mylocation/Generated_data.h5'
 
 # get data
 U = load_data(data_path)
-U_train, U_val, U_test = split_batch_data(U)
+
+train_batches = 400
+val_batches = 99
+test_batches = 100
+
+n_batches = (train_batches, val_batches, test_batches)
+U_train, U_val, U_test = split_batch_data(U, n_batches=n_batches)
 
 
 train_batches, batch_size, N_x, N_y, n_comp = U_train.shape

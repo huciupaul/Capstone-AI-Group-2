@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 
 
-def load_data(path, data_len=12000, downsample=5, transient=200):
+def load_data(path, data_len=120000, downsample=5, transient=200):
     hf = h5py.File(path, 'r')
     print("Contents of the HDF5 file:", list(hf.keys()))
 
