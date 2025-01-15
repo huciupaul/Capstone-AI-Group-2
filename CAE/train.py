@@ -50,7 +50,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
     old_loss = np.zeros(n_epochs)  # needed to evaluate training loss convergence to update l_rate
     tloss_plot = np.zeros(n_epochs)  # training loss
     vloss_plot = np.zeros(n_epochs)  # validation loss
-    N_check = 5  # each N_check epochs we check convergence and validation loss
+    N_check = 1  # each N_check epochs we check convergence and validation loss
     patience = 20  # if the val_loss has not gone down in the last patience epochs, early stop
     last_save = patience  # last epoch where the model was saved
 

@@ -1,5 +1,5 @@
 import os
-%matplotlib inline
+#%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +8,7 @@ import numpy as np
 
 
 def plot_training_curve(vloss_plot, tloss_plot, N_check, epoch):
+    print("Plotting...")
     plt.rcParams["figure.figsize"] = (15,4)
     plt.rcParams["font.size"]  = 20
     plt.title('MSE convergence')
@@ -21,3 +22,6 @@ def plot_training_curve(vloss_plot, tloss_plot, N_check, epoch):
     plt.tight_layout()
     plt.savefig(f'MSE{epoch}.pdf')
     plt.show()
+    print(vloss_plot)
+    print(tloss_plot)
+    print("End of plotting")
