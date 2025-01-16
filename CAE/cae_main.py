@@ -24,7 +24,7 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\CAE\generated_data_600000
 
 
 # Load data
-U = load_data(data_path)
+U = load_data(data_path, data_len=120000, downsample=1, transient=0)
 
 # Define training, validation, and test batches
 # n_batches = 120 000 // 200 = 600
