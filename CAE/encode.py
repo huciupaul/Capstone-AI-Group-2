@@ -25,7 +25,6 @@ n_batch = len(U) // batch_size
 U = batch_data(U, batch_size, n_batch)
 
 # forward pass through encoder in batches, save without batches
-# encoded_batch = enc_model(U[0], enc_mods)
 U_enc = np.zeros((n_batch * batch_size, N_lat))
 for i in range(n_batch):
     U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)

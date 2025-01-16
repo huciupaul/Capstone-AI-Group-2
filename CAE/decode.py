@@ -16,19 +16,29 @@ N_lat = 5
 dec_path = './data/48_RE40_' + str(N_lat)  # to save model
 dec_mods = load_decoder(dec_path)
 
-# load encoded data
+# load encoded non-batched data
 enc_data_path = f'./data/48_Encoded_data_Re40_{N_lat}.h5'
 U_enc = load_encoded_data(enc_data_path)
 
+# batch the encoded data
 batch_size = 10
 n_batch = len(U_enc) // batch_size
 U_enc = batch_data(U_enc, batch_size, n_batch)
 
 # forward pass through decoder in batches
-U_dec = np.zeros((n_batch, batch_size, 48, 48, 2))
-for i, batch in enumerate(U_enc):
-    batch_reshaped = batch.reshape((batch.shape[0], N_lat))
-    U_dec[i] = dec_model(batch_reshaped, dec_mods)
+U_dec = np.zeros((n_batch * batch_size, 48, 48, 2))  # Initialize unbatched output array
+start = 0  # Start index for unbatching
+
+for batch in U_enc:
+    # Decode the batch, dec_model returns an array of shape (batch_size, 48, 48, 2))
+    decoded_batch = dec_model(batch, dec_mods)
+    
+    # Compute the range of indices to fill in U_dec
+    end = start + decoded_batch.shape[0]
+    U_dec[start:end] = decoded_batch  # Assign decoded batch to the corresponding slice
+    start = end  # Update the starting index for the next batch
+
+print("Shape of the decoded output:", U_dec.shape)
 
 # save decoded data
 dec_file = f'./data/48_Decoded_data_Re40_{N_lat}.h5'
