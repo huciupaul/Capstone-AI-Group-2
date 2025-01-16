@@ -1,4 +1,6 @@
 import tensorflow as tf
+from cae_main import n_lat, p_crop, n_comp
+from constants import *
 
 
 def periodic_padding(image, padding=1, asym=False):
@@ -55,18 +57,7 @@ class PerPad2D(tf.keras.layers.Layer):
         return periodic_padding(x, self.padding, self.asym)
 
 
-def create_enc_mods(N_lat):
-    last_conv_dep = 1  # output depth of last conv layer. To include D or vorticity, increase
-    n_fil = [6, 12, 24, last_conv_dep]  # number of filters encoder
-    n_parallel = 3  # number of parallel CNNs for multiscale
-    ker_size = [(3, 3), (5, 5), (7, 7)]  # kernel sizes
-    n_layers = 4  # number of layers in every CNN
-    act = 'tanh'  # activation function
-
-    pad_enc = 'valid'  # no padding in the conv layer
-    pad_dec = 'valid'
-    p_size = [0, 1, 2]  # stride = 2 periodic padding size
-    p_fin = [1, 2, 3]  # stride = 1 periodic padding size
+def create_enc_mods():
 
     # initialize the encoders and decoders with different kernel sizes
     enc_mods = [None] * (n_parallel)
@@ -94,22 +85,15 @@ def create_enc_mods(N_lat):
                                                        name='Enc_' + str(j) + '_Add_Layer1_' + str(i)))
         # Add fully connected layer
         enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
-        enc_mods[j].add(tf.keras.layers.Dense(N_lat, activation='linear', name='Enc_' + str(j) + '_Dense'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation='linear', name='Enc_' + str(j) + '_Dense'))
 
     return enc_mods, ker_size, n_layers
 
 
-def create_dec_mods(conv_out_size, conv_out_shape, p_crop, n_comp):
-    n_dec = [24, 12, 6, 3]  # number of filters decoder
-    n_parallel = 3  # number of parallel CNNs for multiscale
-    ker_size = [(3, 3), (5, 5), (7, 7)]  # kernel sizes
-    n_layers = 4  # number of layers in every CNN
-    act = 'tanh'  # activation function
-    p_dec = 1  # padding in the first decoder layer
-    pad_dec = 'valid'
-    p_fin = [1, 2, 3]  # stride = 1 periodic padding size
+def create_dec_mods(conv_out_size, conv_out_shape):
 
-    dec_mods = [None] * (n_parallel)
+    dec_mods = [None] * n_parallel
+
     for i in range(n_parallel):
         dec_mods[i] = tf.keras.Sequential(name='Dec_' + str(i))
 

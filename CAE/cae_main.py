@@ -24,10 +24,10 @@ U_train, U_val, U_test = split_batch_data(U, n_batches=n_batches)
 train_batches, batch_size, N_x, N_y, n_comp = U_train.shape
 p_crop = N_x
 
-N_lat = 5
+n_lat = 5
 
 # create encoder modules
-enc_mods, ker_size, N_layers = create_enc_mods(N_lat)
+enc_mods, ker_size, N_layers = create_enc_mods()
 
 # explicitly obtain the size of the latent space
 output = U_train[0]
@@ -42,11 +42,11 @@ for i, layer in enumerate(enc_mods[-1].layers):
         print("Size of the latent space:", output.shape[-1])
 
 # create decoder modules
-dec_mods = create_dec_mods(conv_out_size, conv_out_shape, p_crop, n_comp)
+dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
 # train the model
 n_epochs = 500
-enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
+enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods)
 
 # evaluate the model
 test_batches = len(U_test)
