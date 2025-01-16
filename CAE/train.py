@@ -5,7 +5,7 @@ from autoencoder import cae_model
 from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
-from cae_main import n_lat
+from constants import n_lat
 
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
@@ -15,8 +15,8 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
 
     Args:
         inputs: The input data for training or validation.
-        enc_mods: List of encoder modules of the autoencoder.
-        dec_mods: List of decoder modules of the autoencoder.
+        enc_mods: List of keras layers of the encoder.
+        dec_mods: List of keras layers of the decoder.
         Loss_Mse: The Mean Squared Error loss function.
         optimizer: Optimizer used for gradient descent.
         train (bool): If True, perform gradient updates. If False, only compute the loss.

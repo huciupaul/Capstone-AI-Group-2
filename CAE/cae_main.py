@@ -1,30 +1,27 @@
 from autoencoder import create_enc_mods, create_dec_mods, cae_model
 from train import training_loop
 from prepare_data import *
-from metrics import compute_nrmse 
+from metrics import compute_nrmse
+from constants import *
 
 # os.environ["OMP_NUM_THREADS"] = '15' # set cores for numpy
 # os.environ['TF_INTER_OP_PARALLELISM_THREADS'] = '15' # set cores for TF
 # os.environ['TF_INTRA_OP_PARALLELISM_THREADS'] = '15'
 
 
-data_path = r'mylocation/Generated_data.h5'
+data_path = r'data/Generated_data.h5'
 
 # get data
 U = load_data(data_path)
 
-train_batches = 400
-val_batches = 99
-test_batches = 100
+# train_batches = 400
+# val_batches = 99
+# test_batches = 100
+#
+# n_batches = (train_batches, val_batches, test_batches)
+U_train, U_val, U_test = split_batch_data(U)
 
-n_batches = (train_batches, val_batches, test_batches)
-U_train, U_val, U_test = split_batch_data(U, n_batches=n_batches)
 
-
-train_batches, batch_size, N_x, N_y, n_comp = U_train.shape
-p_crop = N_x
-
-n_lat = 5
 
 # create encoder modules
 enc_mods, ker_size, N_layers = create_enc_mods()

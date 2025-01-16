@@ -1,5 +1,4 @@
 import tensorflow as tf
-from cae_main import n_lat, p_crop, n_comp
 from constants import *
 
 
