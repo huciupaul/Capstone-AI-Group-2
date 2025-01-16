@@ -9,6 +9,8 @@ def save_cae(model_path, enc_mods, dec_mods):
     print('Saving Model..')
     Path(model_path).mkdir(parents=True, exist_ok=True)  # creates directory even when it exists
     for i in range(n_parallel):
+        enc_mods[i].compile()
+        dec_mods[i].compile()
         enc_mods[i].save(model_path + '/enc_mod'+str(ker_size[i])+'_'+str(n_lat)+'.h5')
         dec_mods[i].save(model_path + '/dec_mod'+str(ker_size[i])+'_'+str(n_lat)+'.h5')
         enc_mods[i].save_weights(model_path + '/enc_mod'+str(ker_size[i])+'_'+str(n_lat)+'_weights.h5')
@@ -43,13 +45,16 @@ def load_decoder(path):
     for i in range(n_parallel):
         dec_mods[i] = tf.keras.models.load_model(path + '/dec_mod' + str(ker_size[i]) + '_' + str(n_lat) + '.h5',
                                                  custom_objects={"PerPad2D": PerPad2D})
+        dec_mods[i].compile()
     return dec_mods
 
 
 def load_encoder(path):
     enc_mods = [None] * n_parallel
 
+
     for i in range(n_parallel):
         enc_mods[i] = tf.keras.models.load_model(path + '/enc_mod' + str(ker_size[i]) + '_' + str(n_lat) + '.h5',
                                                  custom_objects={"PerPad2D": PerPad2D})
+        enc_mods[i].compile()
     return enc_mods
