@@ -1,3 +1,9 @@
+"""
+This script is independent of the rest of the infrastructure. 
+It decodes data from the latent space and saves the encoded representation. 
+Variables in this file do not interact with or affect variables in the rest of the codebase.
+"""
+
 from helpers import load_decoder
 from autoencoder import dec_model
 from prepare_data import load_encoded_data, batch_data
