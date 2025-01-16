@@ -14,14 +14,13 @@ data_path = r'data/Generated_data.h5'
 # get data
 U = load_data(data_path)
 
+# Change the following variables if you want to change the the data_len (see load_data() in prepare_data.py)
 # train_batches = 400
 # val_batches = 99
 # test_batches = 100
-#
+
 # n_batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U)
-
-
 
 # create encoder modules
 enc_mods, ker_size, N_layers = create_enc_mods()

@@ -16,18 +16,21 @@ enc_path = './data/48_RE40_' + str(N_lat)  # to save model
 enc_mods = load_encoder(enc_path)
 
 # load data
-data_path = 'something.h5'
+data_path = 'data\Generated_data.h5'
 U = load_data(data_path)
 
 # batch data
-batch_size = 10
+batch_size = 50
 n_batch = len(U) // batch_size
 U = batch_data(U, batch_size, n_batch)
 
 # forward pass through encoder in batches, save without batches
-U_enc = np.zeros((n_batch * batch_size, 48, 48, 2))
+# encoded_batch = enc_model(U[0], enc_mods)
+U_enc = np.zeros((n_batch * batch_size, N_lat))
 for i in range(n_batch):
-    U_enc[i * batch_size: (i + 1) * batch_size + 1] = enc_model(U[i], enc_mods)
+    U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)
+
+print(U_enc.shape)
 
 # save encoded data
 enc_file = f'./data/48_Encoded_data_Re40_{N_lat}.h5'

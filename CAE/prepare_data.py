@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 
 
-def load_data(path, data_len=120000, downsample=5, transient=200):
+def load_data(path, data_len=12000, downsample=5, transient=200):
     hf = h5py.File(path, 'r')
     print("Contents of the HDF5 file:", list(hf.keys()))
 
@@ -69,14 +69,8 @@ def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
 
 
 def batch_data(U, b_size, n_batches):
-    batched_data = np.zeros((n_batches, b_size, U.shape[1:]))
+    batched_data = np.zeros((n_batches, b_size, *U.shape[1:]))
     for i in range(n_batches):
-        batched_data[i] = U[i*b_size: (i+1)*b_size].copy()
+        batched_data[i] = U[i*b_size: (i+1)*b_size]
     del U
     return batched_data
-
-
-
-
-
-

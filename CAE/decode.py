@@ -27,7 +27,8 @@ U_enc = batch_data(U_enc, batch_size, n_batch)
 # forward pass through decoder in batches
 U_dec = np.zeros((n_batch, batch_size, 48, 48, 2))
 for i, batch in enumerate(U_enc):
-    U_dec[i] = dec_model(batch, dec_mods)
+    batch_reshaped = batch.reshape((batch.shape[0], N_lat))
+    U_dec[i] = dec_model(batch_reshaped, dec_mods)
 
 # save decoded data
 dec_file = f'./data/48_Decoded_data_Re40_{N_lat}.h5'
