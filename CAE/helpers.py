@@ -2,8 +2,7 @@ from pathlib import Path
 import h5py
 import tensorflow as tf 
 from autoencoder import PerPad2D
-from constants import ker_size, n_parallel
-from cae_main import n_lat
+from constants import ker_size, n_parallel, n_lat
 
 
 def save_cae(model_path, enc_mods, dec_mods):

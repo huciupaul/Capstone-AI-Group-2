@@ -11,3 +11,9 @@ p_size = [0, 1, 2]  # stride = 2 periodic padding size
 p_fin = [1, 2, 3]  # stride = 1 periodic padding size
 n_dec = [24, 12, 6, 3]  # number of filters decoder
 p_dec = 1  # padding in the first decoder layer
+
+n_lat = 5
+p_crop = 48
+n_comp = 2
+N_x = 48
+N_y = 48
