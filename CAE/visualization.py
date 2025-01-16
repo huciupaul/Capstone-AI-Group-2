@@ -1,28 +1,41 @@
-import os
-#%matplotlib inline
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import h5py
 
-def plot_training_curve(vloss_plot, tloss_plot, N_check, epoch):
-    print("Plotting...")
-    plt.rcParams["figure.figsize"] = (15,4)
-    plt.rcParams["font.size"]  = 20
-    plt.title('MSE convergence')
+def plot_training_curve(vloss_plot, tloss_plot, epoch):
+    """
+    Plots training and validation loss over epochs.
+    """
+    plt.rcParams["figure.figsize"] = (15, 4)
+    plt.rcParams["font.size"] = 20
+
+    # Set up the plot
+    plt.title('MSE Convergence')
     plt.yscale('log')
-    plt.grid(True, axis="both", which='both', ls="-", alpha=0.3)
-    plt.plot(tloss_plot[np.nonzero(tloss_plot)], 'y', label='Train loss')
-    plt.plot(np.arange(np.nonzero(vloss_plot)[0].shape[0])*N_check,
-                vloss_plot[np.nonzero(vloss_plot)], label='Val loss')
-    plt.xlabel('epochs')
+    plt.grid(True, axis="both", which='both', alpha=0.3)
+
+    # Training Loss
+    plt.plot(tloss_plot, 'y', label='Train loss')
+
+    # Extract nonzero validation loss values and corresponding epochs
+    val_indices = np.nonzero(vloss_plot)[0]
+    val_epochs = val_indices  # Convert indices to epochs
+    val_loss_values = vloss_plot[val_indices]
+
+    # Plot validation loss only at computed epochs
+    plt.plot(val_epochs, val_loss_values, label='Val loss')
+
+    last_tloss_index = np.max(np.nonzero(tloss_plot)) if np.any(tloss_plot) else len(tloss_plot) - 1
+    # Set x-axis limit to match the length of tloss_plot
+    plt.xlim([0, last_tloss_index])
+
+    plt.xlabel('Epochs')
     plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'MSE{epoch}.pdf')
+
+    # Save and show the plot
+    plt.savefig(f'MSE_{epoch}.pdf')
     plt.show()
-    print(vloss_plot)
-    print(tloss_plot)
-    print("End of plotting")
+
 
 def save_mse_plot(vloss_plot, tloss_plot, save_path):
     """
@@ -40,3 +53,31 @@ def save_mse_plot(vloss_plot, tloss_plot, save_path):
         # Save the training loss array
         hf.create_dataset("training_loss", data=tloss_plot)
     print(f"Loss plots saved successfully to {save_path}")
+
+
+def read_mse_plot(file_path):
+    """
+    Reads validation loss and training loss arrays from an HDF5 file.
+
+    Parameters:
+        file_path (str): The path to the HDF5 file.
+
+    Returns:
+        tuple: (vloss_plot, tloss_plot) as NumPy arrays.
+    """
+    try:
+        with h5py.File(file_path, 'r') as hf:
+            # Check if datasets exist in the file
+            if 'validation_loss' not in hf or 'training_loss' not in hf:
+                raise KeyError("Missing dataset(s) in HDF5 file.")
+
+            # Read datasets
+            vloss_plot = hf['validation_loss'][:]
+            tloss_plot = hf['training_loss'][:]
+
+        print(f"Successfully read loss data from {file_path}")
+        return vloss_plot, tloss_plot
+
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+        return None ,None
