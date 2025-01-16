@@ -9,13 +9,24 @@ from visualization import save_mse_plot
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
 
     """
-    Trains the model by minimizing the loss between input and output
+    Performs one training step by minimizing the loss between the input and the autoencoded output.
+
+    Args:
+        inputs: The input data for training or validation.
+        enc_mods: List of encoder modules of the autoencoder.
+        dec_mods: List of decoder modules of the autoencoder.
+        Loss_Mse: The Mean Squared Error loss function.
+        optimizer: Optimizer used for gradient descent.
+        train (bool): If True, perform gradient updates. If False, only compute the loss.
+
+    Returns:
+        loss: Computed loss for the given input batch.
     """
 
-    # autoencoded field
+    # Reconstructs the decoded output from the autoencoder
     decoded = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
 
-    # loss with respect to the data
+    # loss beteween decoded output and input
     loss = Loss_Mse(inputs, decoded)
 
     # compute and apply gradients inside tf.function environment for computational efficiency
@@ -28,6 +39,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
         for dec_mod in dec_mods:
             varss += dec_mod.trainable_weights
 
+        # Perform gradient computation and update weights
         with tf.GradientTape() as tape:
             decoded = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
             loss = Loss_Mse(inputs, decoded)
@@ -38,53 +50,78 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
 
 
 def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size):
-    rng = np.random.default_rng()  # random generator for later shuffling
+    
+    """
+    Main training loop for the convolutional autoencoder.
+
+    Args:
+        U_train: Training dataset split into batches.
+        U_val: Validation dataset split into batches.
+        n_epochs: Number of epochs to train.
+        enc_mods: List of encoder modules.
+        dec_mods: List of decoder modules.
+        N_lat: Latent dimension size.
+        ker_size: Kernel size for the autoencoder.
+
+    Returns:
+        enc_mods: Updated encoder modules after training.
+        dec_mods: Updated decoder modules after training.
+    """
+    
+    # random generator for later shuffling
+    rng = np.random.default_rng()
 
     # define loss, optimizer and initial learning rate
-    Loss_Mse = tf.keras.losses.MeanSquaredError()
+    Loss_Mse = tf.keras.losses.MeanSquaredError()   # Mean Squared Error as the reconstruction loss
     optimizer = tf.keras.optimizers.Adam(amsgrad=True)  # amsgrad True for better convergence
-    l_rate = 0.002
+    l_rate = 0.002  # initial learning rate
     optimizer.learning_rate = l_rate
 
-    # quantities to check and store the training and validation loss and the training goes on
-    old_loss = np.zeros(n_epochs)  # needed to evaluate training loss convergence to update l_rate
-    tloss_plot = np.zeros(n_epochs)  # training loss
-    vloss_plot = np.zeros(n_epochs)  # validation loss
-    N_check = 5  # each N_check epochs we check convergence and validation loss
-    patience = 40  # if the val_loss has not gone down in the last patience epochs, early stop
-    last_save = patience  # last epoch where the model was saved
+    # quantities to check and store the training and validation loss as the training goes on
+    old_loss = np.zeros(n_epochs)  # Stores training loss for learning rate adjustment
+    tloss_plot = np.zeros(n_epochs)  # Training loss for plotting
+    vloss_plot = np.zeros(n_epochs)  # Validation loss for plotting
 
-    # Hyperparameters for changing learning rate
-    N_lr = 10
-    lrate_update = True
-    lrate_mult = 0.75
 
-    N_plot = 10
-    t = time.time()  # Initialize time for printing time per epoch
-    model_path = './data/48_RE40_' + str(N_lat)  # to save model
+    # Early stopping and learning rate adjustment hyperparameters
+    N_check = 5  # Frequency (in epochs) to check convergence and validation loss
+    patience = 40  # Stop training if no validation loss improvement for 'patience' epochs
+    last_save = patience  # Epoch where the best model was last saved
 
+    N_lr = 10  # Number of epochs to wait before considering learning rate reduction
+    lrate_update = True  # Whether to enable learning rate adjustments
+    lrate_mult = 0.75  # Factor by which to reduce the learning rate
+
+    N_plot = 10  # Frequency (in epochs) to save loss plots
+    t = time.time()  # Initialize timer for epoch timing
+
+    # Path for saving model and optimizer weights
+    model_path = './data/48_RE40_' + str(N_lat)
+
+    # Number of batches in the training and validation datasets
     train_batches = U_train.shape[0]
     val_batches = U_val.shape[0]
 
+    # Main training loop
     for epoch in trange(n_epochs, desc='Epochs'):
 
-        # Incorporate early stopping
+        # Early stopping check
         if epoch - last_save > patience:
             print(f'Early stopping at epoch {epoch}')
             break
 
         # Perform gradient descent for all the batches every epoch
         loss_0 = 0
-        rng.shuffle(U_train, axis=0)  # shuffle batches
+        rng.shuffle(U_train, axis=0)  # Shuffle batches
         for j in range(train_batches):
             loss = train_step(U_train[j], enc_mods, dec_mods, Loss_Mse, optimizer)
             loss_0 += loss
 
-        # save train loss
+        # Compute and save train loss
         # tloss_plot[epoch] = loss_0.numpy() / train_batches
         tloss_plot[epoch] = loss_0 / train_batches
 
-        # every N epochs checks the convergence of the training loss and val loss
+        # Every 'N_check' epochs checks the convergence of the training loss and val loss
         if epoch % N_check == 0:
 
             # Compute Validation Loss
@@ -93,7 +130,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
                 loss = train_step(U_val[j], enc_mods, dec_mods, Loss_Mse, optimizer, train=False)
                 loss_val += loss
 
-            # Save validation loss
+            # Save the average validation loss for this epoch
             # vloss_plot[epoch] = loss_val.numpy() / val_batches
             vloss_plot[epoch] = loss_val / val_batches
 
@@ -110,21 +147,24 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
                     min_weights = optimizer.get_weights()  # RV - just added this line
                     optimizer.set_weights(min_weights)
                     print('LEARNING RATE CHANGE', optimizer.learning_rate.numpy())
-                    old_loss[epoch - N_lr:epoch] = 1e6  # so that l_rate is not changed for N_lr steps
+                    
+                    # Prevent further learning rate changes for the next N_lr epochs
+                    old_loss[epoch - N_lr:epoch] = 1e6
 
-            # store current loss
+            # Store current training loss
             old_loss[epoch] = tloss_plot[epoch].copy()
 
-            # save best model (the one with minimum validation loss)
+            # Save best model (the one with minimum validation loss)
             if epoch > 1 and vloss_plot[epoch] < \
                     (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])]).min():
-                # saving the model weights
+                # Saving the model weights
                 save_cae(model_path, enc_mods, dec_mods, ker_size, N_lat)
 
-                # saving optimizer parameters
+                # Saving optimizer parameters
                 save_optimizer_params(model_path, optimizer)
 
-                last_save = epoch  # store the last time the val loss has decreased for early stop
+                # store the last time the val loss has decreased for early stop
+                last_save = epoch
 
             # Print loss values and training time (per epoch)
             print('Epoch', epoch, '; Train_Loss', f"{tloss_plot[epoch]:.4f}",
@@ -132,9 +172,12 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
                   f"{(vloss_plot[epoch]) / (tloss_plot[epoch]):.4f}")
             print(f'Time per epoch {(time.time() - t):.2f} seconds')
             print('')
-            t = time.time()  # Reset time after each epoch
 
-        if (epoch % N_plot == 0) and epoch != 0:  # Plot every N_plot epochs
+            # Reset time after each epoch
+            t = time.time()
+
+        # Plot every N_plot epochs
+        if (epoch % N_plot == 0) and epoch != 0:
             # plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
             save_path = f'mse_plot_{epoch}.h5'
             save_mse_plot(vloss_plot, tloss_plot, save_path)
