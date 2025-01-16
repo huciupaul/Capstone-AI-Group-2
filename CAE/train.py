@@ -5,6 +5,8 @@ from autoencoder import cae_model
 from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
+from cae_main import n_lat
+
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
 
@@ -26,7 +28,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     # Reconstructs the decoded output from the autoencoder
     decoded = cae_model(inputs, enc_mods, dec_mods, is_train=train)[-1]
 
-    # loss beteween decoded output and input
+    # loss between decoded output and input
     loss = Loss_Mse(inputs, decoded)
 
     # compute and apply gradients inside tf.function environment for computational efficiency
@@ -49,7 +51,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     return loss
 
 
-def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size):
+def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
     
     """
     Main training loop for the convolutional autoencoder.
@@ -60,8 +62,6 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
         n_epochs: Number of epochs to train.
         enc_mods: List of encoder modules.
         dec_mods: List of decoder modules.
-        N_lat: Latent dimension size.
-        ker_size: Kernel size for the autoencoder.
 
     Returns:
         enc_mods: Updated encoder modules after training.
@@ -72,31 +72,30 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
     rng = np.random.default_rng()
 
     # define loss, optimizer and initial learning rate
-    Loss_Mse = tf.keras.losses.MeanSquaredError()   # Mean Squared Error as the reconstruction loss
+    Loss_Mse = tf.keras.losses.MeanSquaredError()       # Mean Squared Error as the reconstruction loss
     optimizer = tf.keras.optimizers.Adam(amsgrad=True)  # amsgrad True for better convergence
     l_rate = 0.002  # initial learning rate
     optimizer.learning_rate = l_rate
 
     # quantities to check and store the training and validation loss as the training goes on
-    old_loss = np.zeros(n_epochs)  # Stores training loss for learning rate adjustment
-    tloss_plot = np.zeros(n_epochs)  # Training loss for plotting
-    vloss_plot = np.zeros(n_epochs)  # Validation loss for plotting
-
+    old_loss = np.zeros(n_epochs)       # Stores training loss for learning rate adjustment
+    tloss_plot = np.zeros(n_epochs)     # Training loss for plotting
+    vloss_plot = np.zeros(n_epochs)     # Validation loss for plotting
 
     # Early stopping and learning rate adjustment hyperparameters
-    N_check = 5  # Frequency (in epochs) to check convergence and validation loss
-    patience = 40  # Stop training if no validation loss improvement for 'patience' epochs
-    last_save = patience  # Epoch where the best model was last saved
+    N_check = 5             # Frequency (in epochs) to check convergence and validation loss
+    patience = 40           # Stop training if no validation loss improvement for 'patience' epochs
+    last_save = patience    # Epoch where the best model was last saved
 
-    N_lr = 10  # Number of epochs to wait before considering learning rate reduction
-    lrate_update = True  # Whether to enable learning rate adjustments
-    lrate_mult = 0.75  # Factor by which to reduce the learning rate
+    N_lr = 10               # Number of epochs to wait before considering learning rate reduction
+    lrate_update = True     # Whether to enable learning rate adjustments
+    lrate_mult = 0.75       # Factor by which to reduce the learning rate
 
     N_plot = 10  # Frequency (in epochs) to save loss plots
     t = time.time()  # Initialize timer for epoch timing
 
     # Path for saving model and optimizer weights
-    model_path = './data/48_RE40_' + str(N_lat)
+    model_path = './data/48_RE40_' + str(n_lat)
 
     # Number of batches in the training and validation datasets
     train_batches = U_train.shape[0]
@@ -141,10 +140,10 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
                 tt_loss = np.mean(tloss_plot[epoch - N_lr:epoch])
                 if tt_loss > old_loss[epoch - N_lr]:
                     # if it is larger, load optimal val loss weights and decrease learning rate
-                    enc_mods, dec_mods = load_opt_weights(model_path)
+                    enc_mods, dec_mods = load_opt_weights(model_path, enc_mods, dec_mods)
 
                     optimizer.learning_rate = optimizer.learning_rate * lrate_mult
-                    min_weights = optimizer.get_weights()  # RV - just added this line
+                    min_weights = optimizer.get_weights()
                     optimizer.set_weights(min_weights)
                     print('LEARNING RATE CHANGE', optimizer.learning_rate.numpy())
                     
@@ -158,7 +157,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat, ker_size)
             if epoch > 1 and vloss_plot[epoch] < \
                     (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])]).min():
                 # Saving the model weights
-                save_cae(model_path, enc_mods, dec_mods, ker_size, N_lat)
+                save_cae(model_path, enc_mods, dec_mods)
 
                 # Saving optimizer parameters
                 save_optimizer_params(model_path, optimizer)
