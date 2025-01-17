@@ -1,4 +1,4 @@
 from visualization import plot_training_curve, read_mse_plot
 
-vloss_plot, tloss_plot = read_mse_plot("mse_plot_50.h5")
+vloss_plot, tloss_plot = read_mse_plot("mse_plot_75.h5")
 plot_training_curve(vloss_plot, tloss_plot, 50)

@@ -155,7 +155,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
 
             # Save best model (the one with minimum validation loss)
             if epoch > 1 and vloss_plot[epoch] < \
-                    (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])]).min():
+                    (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])] if np.any(vloss_plot[:epoch - 1]) else np.array([float('inf')])).min():
                 # Saving the model weights
                 save_cae(model_path, enc_mods, dec_mods)
 
