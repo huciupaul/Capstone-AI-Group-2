@@ -19,7 +19,7 @@ ks = KolSol(nk=8, nf=4, re=40.0, ndim=2) # nk = no of symmetric wavenumbers   nf
 dt = 0.01
 datalen = 12000
 steps = int(datalen / dt)
-store_interval = 10  # Store every 10 steps
+store_interval = 50  # Store every 50 steps
 n_stored = steps // store_interval
 # the timestep to store the resuls is 0.1
 
