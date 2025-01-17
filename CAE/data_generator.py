@@ -17,7 +17,7 @@ np.random.seed(42)
 # instantiate solver
 ks = KolSol(nk=8, nf=4, re=40.0, ndim=2) # nk = no of symmetric wavenumbers   nf = forcing frequency, re=40 fully turbulent flow
 dt = 0.01
-datalen = 24000
+datalen = 48000
 steps = int(datalen / dt)
 store_interval = 50  # Store every 50 steps
 n_stored = steps // store_interval
@@ -57,8 +57,9 @@ end_time = time.time()
 elapsed_time = end_time - start_time
 print(f"Simulation loop execution time: {elapsed_time:.2f} seconds")
 
+filename = f"Generated_data_{n_stored}.h5"
 def write_h5(velocity: np.ndarray, kinetic_energy: np.ndarray, dissipation_rates: np.ndarray) -> None:
-    with h5py.File("Generated_data.h5", 'w') as hf:
+    with h5py.File(filename, 'w') as hf:
         # Save velocity as a dataset
         hf.create_dataset("velocity_field", data=velocity, compression="gzip")
 
@@ -66,7 +67,7 @@ def write_h5(velocity: np.ndarray, kinetic_energy: np.ndarray, dissipation_rates
         hf.create_dataset("kinetic_energy", data=kinetic_energy, compression="gzip")
 
         # Save dissipation rates list
-        hf.create_dataset("dissipation_rates", data=dissipation_rates, compression="gzip")
+        hf.create_dataset("dissipation_rate", data=dissipation_rates, compression="gzip")
     print(f"Results saved to Generated_data.h5")
   
 write_h5(u_field_all, K, D)
@@ -76,9 +77,9 @@ write_h5(u_field_all, K, D)
 print(f"D shape: {D.shape}, K shape: {K.shape}, u_field_all shape: {u_field_all.shape}")
     
 
-with h5py.File("Generated_data.h5", "r") as h5file:
+with h5py.File(filename, "r") as h5file:
     velocity = h5file["velocity_field"][:]
-    dissipation = h5file["dissipation_rates"][:]
+    dissipation = h5file["dissipation_rate"][:]
     kinetic_energy = h5file["kinetic_energy"][:]
 
 

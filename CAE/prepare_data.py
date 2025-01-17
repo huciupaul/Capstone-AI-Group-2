@@ -13,6 +13,29 @@ def load_data(path, data_len=12000, downsample=5, transient=200):
     return U
 
 
+def load_velocity_clustering(path, data_len=12000):
+    hf = h5py.File(path, 'r')
+    U = np.array(hf.get('velocity_field')[-data_len:], dtype=np.float32)
+    hf.close()
+    print('Data Loaded successfully! \n')
+    print(f'total samples: {U.shape[0]} \n')
+    print(f'Data Shape: {U.shape}')
+
+    return U
+
+
+def load_dissip_clustering(path, data_len=12000):
+    hf = h5py.File(path, 'r')
+    D = np.array(hf.get('dissipation_rate')[-data_len:], dtype=np.float32)
+    hf.close()
+    print('D Loaded successfully! \n')
+    print(f'total samples: {D.shape[0]} \n')
+    print(f'Data Shape: {D.shape}')
+
+    return D
+
+
+
 def load_encoded_data(path):
     with h5py.File(path, 'r') as hf:
         if 'U_enc' in hf:

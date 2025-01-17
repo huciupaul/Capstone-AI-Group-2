@@ -6,7 +6,7 @@ Variables in this file do not interact with or affect variables in the rest of t
 
 from helpers import load_encoder
 from autoencoder import enc_model
-from prepare_data import load_data, batch_data
+from prepare_data import load_velocity_clustering, load_dissip_clustering, batch_data
 import numpy as np
 import h5py
 from constants import *
@@ -17,10 +17,10 @@ enc_mods = load_encoder(enc_path)
 
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\CAE\generated_data_600000_5.h5"
+data_path = r"change to new path"
 
 # Load data
-U = load_data(data_path, data_len=120000, downsample=1, transient=0)[-12000:]
+U = load_velocity_clustering(data_path)
 batch_size = 200
 n_batch = 60
 
@@ -35,11 +35,16 @@ for i in range(n_batch):
 # Create time array
 t = np.arange(0, len(U_enc) * 0.5, 0.5)
 
+# load dissipation
+D = load_dissip_clustering(data_path)
+
 print('U_enc shape:', U_enc.shape)
 print('t shape: ', t.shape)
+print('D shape: ', D.shape)
 
 # Save encoded data with time field
 enc_file = f'./data/48_Encoded_data_Re40_{n_lat}_17_1.h5'
 with h5py.File(enc_file, 'w') as hf:
     hf.create_dataset('U_enc', data=U_enc)
-    hf.create_dataset('t', data=t)  # Add time field
+    hf.create_dataset('dissipation_rate', data=D)
+    hf.create_dataset('t', data=t)
