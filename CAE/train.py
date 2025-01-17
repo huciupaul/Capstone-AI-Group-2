@@ -14,7 +14,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     Performs one training step by minimizing the loss between the input and the autoencoded output.
 
     Args:
-        inputs: The input data for training or validation.
+        inputs: The batched input data for training or validation.
         enc_mods: List of keras layers of the encoder.
         dec_mods: List of keras layers of the decoder.
         Loss_Mse: The Mean Squared Error loss function.
@@ -84,14 +84,14 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
 
     # Early stopping and learning rate adjustment hyperparameters
     N_check = 5             # Frequency (in epochs) to check convergence and validation loss
-    patience = 40           # Stop training if no validation loss improvement for 'patience' epochs
+    patience = 51           # Stop training if no validation loss improvement for 'patience' epochs
     last_save = patience    # Epoch where the best model was last saved
 
     N_lr = 10               # Number of epochs to wait before considering learning rate reduction
     lrate_update = True     # Whether to enable learning rate adjustments
     lrate_mult = 0.75       # Factor by which to reduce the learning rate
 
-    N_plot = 10  # Frequency (in epochs) to save loss plots
+    N_plot = 25  # Frequency (in epochs) to save loss plots
     t = time.time()  # Initialize timer for epoch timing
 
     # Path for saving model and optimizer weights
@@ -155,7 +155,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
 
             # Save best model (the one with minimum validation loss)
             if epoch > 1 and vloss_plot[epoch] < \
-                    (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])]).min():
+                    (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])] if np.any(vloss_plot[:epoch - 1]) else np.array([float('inf')])).min():
                 # Saving the model weights
                 save_cae(model_path, enc_mods, dec_mods)
 
