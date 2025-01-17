@@ -20,9 +20,9 @@ enc_mods = load_encoder(enc_path)
 data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\CAE\generated_data_600000_5.h5"
 
 # Load data
-U = load_data(data_path, data_len=120000, downsample=1, transient=0)[-8000:]
+U = load_data(data_path, data_len=120000, downsample=1, transient=0)[-12000:]
 batch_size = 200
-n_batch = 40
+n_batch = 60
 
 # batch U
 U = batch_data(U, batch_size, n_batch)
@@ -32,11 +32,14 @@ U_enc = np.zeros((n_batch * batch_size, n_lat))
 for i in range(n_batch):
     U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)
 
-print(U_enc.shape)
+# Create time array
+t = np.arange(0, len(U_enc) * 0.5, 0.5)
 
-# save encoded data
+print('U_enc shape:', U_enc.shape)
+print('t shape: ', t.shape)
+
+# Save encoded data with time field
 enc_file = f'./data/48_Encoded_data_Re40_{n_lat}_17_1.h5'
-hf = h5py.File(enc_file, 'w')
-hf.create_dataset('U_enc', data=U_enc)
-hf.close()
-print(f"Successfully encoded data saved in {enc_file}")
+with h5py.File(enc_file, 'w') as hf:
+    hf.create_dataset('U_enc', data=U_enc)
+    hf.create_dataset('t', data=t)  # Add time field
