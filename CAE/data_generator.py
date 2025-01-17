@@ -17,7 +17,7 @@ np.random.seed(42)
 # instantiate solver
 ks = KolSol(nk=8, nf=4, re=40.0, ndim=2) # nk = no of symmetric wavenumbers   nf = forcing frequency, re=40 fully turbulent flow
 dt = 0.01
-datalen = 12000
+datalen = 24000
 steps = int(datalen / dt)
 store_interval = 50  # Store every 50 steps
 n_stored = steps // store_interval
