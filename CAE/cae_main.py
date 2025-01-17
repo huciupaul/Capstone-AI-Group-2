@@ -3,7 +3,7 @@ from train import training_loop
 from prepare_data import split_batch_data, load_data
 from metrics import compute_nrmse
 from constants import *
-import numpy as np
+
 import tensorflow as tf
 
 # Suppress TensorFlow logs
