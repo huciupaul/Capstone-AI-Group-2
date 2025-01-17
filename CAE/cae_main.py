@@ -3,7 +3,7 @@ from train import training_loop
 from prepare_data import split_batch_data, load_data
 from metrics import compute_nrmse
 from constants import *
-
+import numpy as np
 import tensorflow as tf
 
 # Suppress TensorFlow logs
@@ -20,7 +20,7 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\CAE\generated_data_600000_5.h5"
+data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\New Git\Capstone-AI-Group-2\generated_data_600000_5.h5"
 
 
 # Load data
