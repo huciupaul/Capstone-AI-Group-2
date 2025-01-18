@@ -82,17 +82,17 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
     tloss_plot = np.zeros(n_epochs)     # Training loss for plotting
     vloss_plot = np.zeros(n_epochs)     # Validation loss for plotting
 
-    # Early stopping and learning rate adjustment hyperparameters
+   # Early stopping and learning rate adjustment hyperparameters
     N_check = 5             # Frequency (in epochs) to check convergence and validation loss
-    patience = 51           # Stop training if no validation loss improvement for 'patience' epochs
+    patience = 200           # Stop training if no validation loss improvement for 'patience' epochs
     last_save = patience    # Epoch where the best model was last saved
 
-    N_lr = 10               # Number of epochs to wait before considering learning rate reduction
+    N_lr = 100              # Number of epochs to wait before considering learning rate reduction
     lrate_update = True     # Whether to enable learning rate adjustments
     lrate_mult = 0.75       # Factor by which to reduce the learning rate
 
-    N_plot = 25  # Frequency (in epochs) to save loss plots
-    t = time.time()  # Initialize timer for epoch timing
+    N_plot = 20  # Frequency (in epochs) to save loss plots
+    t = time.time()  # Initialize timer for epoch timing
 
     # Path for saving model and optimizer weights
     model_path = './data/48_RE40_' + str(n_lat)

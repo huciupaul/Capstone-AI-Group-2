@@ -20,23 +20,22 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\New Git\Capstone-AI-Group-2\generated_data_600000_5.h5"
+data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_96000.h5"
 
 
 # Load data
-U = load_data(data_path, data_len=120000, downsample=1, transient=0)
+U = load_data(data_path, data_len=96000, downsample=1, transient=0)
 
 # Define training, validation, and test batches
-# n_batches = 120 000 // 200 = 600
-# is b_size = 100, n_batch = 1200, where 1100 for training
-batch_size = 200
+# n_batches = 96 000 // 300 = 320
+batch_size = 300
 
-train_batches = 560
-val_batches = 20
-test_batches = 20
+train_batches = 300
+val_batches = 10
+test_batches = 10
 
 n_batches = (train_batches, val_batches, test_batches)
-U_train, U_val, U_test = split_batch_data(U, batch_size=200, n_batches=n_batches)
+U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
 
 # create encoder modules
 enc_mods = create_enc_mods()
@@ -58,7 +57,7 @@ for i, layer in enumerate(enc_mods[-1].layers):
 dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
 # train the model
-n_epochs = 500
+n_epochs = 1000
 enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods)
 
 # evaluate the model
