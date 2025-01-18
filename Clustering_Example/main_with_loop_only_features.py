@@ -27,9 +27,6 @@ start_time = time.time()
 fld = './ExampleData/'
 fln = fld + 'Example_data.h5'
 
-import os
-print(os.getcwd())
-
 hf = h5py.File(fln,'r')
 x = np.array(hf.get('Z'))
 t = np.array(hf.get('t'))
