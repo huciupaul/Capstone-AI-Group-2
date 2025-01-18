@@ -21,7 +21,7 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-G
 # Load velocity data
 U = load_velocity_clustering(data_path)
 batch_size = 200
-n_batch = 60
+n_batch = len(U) // batch_size
 
 # Batch U
 U = batch_data(U, batch_size, n_batch)

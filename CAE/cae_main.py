@@ -24,15 +24,15 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-G
 
 
 # Load data
-U = load_data(data_path, data_len=96000, downsample=1, transient=0)
+U = load_data(data_path, data_len=150000, downsample=1, transient=0)
 
 # Define training, validation, and test batches
 # n_batches = 96 000 // 300 = 320
 batch_size = 300
 
-train_batches = 300
-val_batches = 10
-test_batches = 10
+train_batches = 400
+val_batches = 50
+test_batches = 50
 
 n_batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
