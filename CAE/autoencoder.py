@@ -82,9 +82,10 @@ def create_enc_mods():
                                                        kernel_size=ker_size[j],
                                                        activation=act, padding=pad_dec, strides=1,
                                                        name='Enc_' + str(j) + '_Add_Layer1_' + str(i)))
-        # Add fully connected layer
+        # Add fully connected layer 1 and 2
         enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
-        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation='linear', name='Enc_' + str(j) + '_Dense'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_hidden, activation='relu', name='Enc_' + str(j) + '_Dense1'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation='linear', name='Enc_' + str(j) + '_Dense2'))
 
     return enc_mods
 
@@ -99,8 +100,9 @@ def create_dec_mods(conv_out_size, conv_out_shape):
     # generate decoder layers
     for j in range(n_parallel):
 
-        # Add fully connected layer first to map latent space to the appropriate dimensions
-        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation='linear', name='Dec_' + str(j) + '_Dense'))
+        # Add fully connected layer 1 and 2. the second to map the hidden size to the appropriate dimensions
+        dec_mods[j].add(tf.keras.layers.Dense(n_hidden, activation='linear', name='Dec_' + str(j) + '_Dense1'))
+        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation='relu', name='Dec_' + str(j) + '_Dense2'))
         dec_mods[j].add(tf.keras.layers.Reshape(conv_out_shape, name='Dec_' + str(j) + '_Reshape'))
 
         for i in range(n_layers):

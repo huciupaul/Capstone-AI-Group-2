@@ -24,15 +24,15 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-G
 
 
 # Load data
-U = load_data(data_path, data_len=150000, downsample=1, transient=0)
+U = load_data(data_path, data_len=60000, downsample=1, transient=0)
 
 # Define training, validation, and test batches
 # n_batches = 96 000 // 300 = 320
 batch_size = 300
 
-train_batches = 400
-val_batches = 50
-test_batches = 50
+train_batches = 160
+val_batches = 20
+test_batches = 20
 
 n_batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
@@ -60,13 +60,26 @@ dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 n_epochs = 1000
 enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods)
 
-# evaluate the model
-# test_batches = len(U_test)
-# batch_size = U_test.shape[1]
 
-U_pred = np.zeros((test_batches, batch_size, N_x, N_y, n_comp))
+U_pred_test = np.zeros((test_batches, batch_size, N_x, N_y, n_comp))
 for i in range(test_batches):
-    U_pred[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
+    U_pred_test[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
 
-nrmse = compute_nrmse(U_test, U_pred)
-print("Average NRMSE:", nrmse.numpy())
+nrmse_test = compute_nrmse(U_test, U_pred_test)
+print("Average NRMSE test:", nrmse_test.numpy())
+
+
+U_pred_train = np.zeros((train_batches, batch_size, N_x, N_y, n_comp))
+for i in range(train_batches):
+    U_pred_train[i] = cae_model(U_train[i], enc_mods, dec_mods, is_train=False)[-1]
+
+nrmse_train = compute_nrmse(U_train, U_pred_train)
+print("Average NRMSE train:", nrmse_train.numpy())
+
+
+U_pred_val = np.zeros((val_batches, batch_size, N_x, N_y, n_comp))
+for i in range(val_batches):
+    U_pred_val[i] = cae_model(U_val[i], enc_mods, dec_mods, is_train=False)[-1]
+
+nrmse_val = compute_nrmse(U_val, U_pred_val)
+print("Average NRMSE val:", nrmse_val.numpy())
