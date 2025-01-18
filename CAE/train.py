@@ -74,7 +74,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
     # define loss, optimizer and initial learning rate
     Loss_Mse = tf.keras.losses.MeanSquaredError()       # Mean Squared Error as the reconstruction loss
     optimizer = tf.keras.optimizers.Adam(amsgrad=True)  # amsgrad True for better convergence
-    l_rate = 0.02  # initial learning rate
+    l_rate = 0.002  # initial learning rate
     optimizer.learning_rate = l_rate
 
     # quantities to check and store the training and validation loss as the training goes on

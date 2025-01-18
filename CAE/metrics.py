@@ -28,7 +28,7 @@ def compute_nrmse(U_test, U_pred):
 
     # Compute the NRMSE for each batch
     nrmse_per_time = tf.sqrt(mse / variance)  # Shape: [n_batches, batch_size]
-    print(f"Max NRMSE: {tf.reduce_max(nrmse_per_time).numpy()}")
+    # print(f"Max NRMSE: {tf.reduce_max(nrmse_per_time).numpy()}")
 
     # Average NRMSE across the batch
     nrmse = tf.reduce_mean(nrmse_per_time)
