@@ -140,7 +140,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
                 tt_loss = np.mean(tloss_plot[epoch - N_lr:epoch])
                 if tt_loss > old_loss[epoch - N_lr]:
                     # if it is larger, load optimal val loss weights and decrease learning rate
-                    enc_mods, dec_mods = load_opt_weights(model_path, enc_mods, dec_mods)
+                    enc_mods, dec_mods = load_opt_weights(model_path, enc_mods, dec_mods, n_lat)
 
                     optimizer.learning_rate = optimizer.learning_rate * lrate_mult
                     min_weights = optimizer.get_weights()
@@ -157,7 +157,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
             if epoch > 1 and vloss_plot[epoch] < \
                     (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])] if np.any(vloss_plot[:epoch - 1]) else np.array([float('inf')])).min():
                 # Saving the model weights
-                save_cae(model_path, enc_mods, dec_mods)
+                save_cae(model_path, enc_mods, dec_mods, n_lat)
 
                 # Saving optimizer parameters
                 save_optimizer_params(model_path, optimizer)
