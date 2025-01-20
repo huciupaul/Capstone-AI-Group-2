@@ -51,7 +51,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     return loss
 
 
-def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
+def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
     
     """
     Main training loop for the convolutional autoencoder.

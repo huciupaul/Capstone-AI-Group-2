@@ -5,7 +5,7 @@ from autoencoder import PerPad2D
 from constants import ker_size, n_parallel, n_lat
 
 
-def save_cae(model_path, enc_mods, dec_mods):
+def save_cae(model_path, enc_mods, dec_mods, n_lat):
     print('Saving Model..')
     Path(model_path).mkdir(parents=True, exist_ok=True)  # creates directory even when it exists
     for i in range(n_parallel):
@@ -29,7 +29,7 @@ def save_optimizer_params(path, optimizer):
     print("Optimizer saved.")
 
 
-def load_opt_weights(path, enc_mods, dec_mods):
+def load_opt_weights(path, enc_mods, dec_mods, n_lat):
     print('LOADING MINIMUM')
 
     for i in range(n_parallel):
@@ -39,7 +39,7 @@ def load_opt_weights(path, enc_mods, dec_mods):
     return enc_mods, dec_mods
 
 
-def load_decoder(path):
+def load_decoder(path, n_lat):
     dec_mods = [None] * n_parallel
 
     for i in range(n_parallel):
@@ -49,7 +49,7 @@ def load_decoder(path):
     return dec_mods
 
 
-def load_encoder(path):
+def load_encoder(path, n_lat):
     enc_mods = [None] * n_parallel
 
 

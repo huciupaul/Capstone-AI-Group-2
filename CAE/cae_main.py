@@ -39,7 +39,7 @@ U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_
 
 # create encoder modules
 print('creating encoder model')
-enc_mods = create_enc_mods()
+enc_mods = create_enc_mods(n_lat)
 print('created encoder model')
 
 # explicitly obtain the size of the latent space
@@ -60,7 +60,7 @@ dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
 # train the model
 n_epochs = 1000
-enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods)
+enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat)
 
 
 U_pred_train = np.zeros((train_batches, batch_size, N_x, N_y, n_comp))

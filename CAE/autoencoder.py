@@ -56,7 +56,7 @@ class PerPad2D(tf.keras.layers.Layer):
         return periodic_padding(x, self.padding, self.asym)
 
 
-def create_enc_mods():
+def create_enc_mods(n_lat):
 
     # initialize the encoders and decoders with different kernel sizes
     enc_mods = [None] * (n_parallel)

@@ -11,29 +11,33 @@ import numpy as np
 import h5py
 from constants import *
 
-# load encoder
-enc_path = './data/48_RE40_' + str(n_lat)  # to save model
-enc_mods = load_encoder(enc_path)
 
-# load data
-data_path = 'data\Generated_data.h5'
-U = load_data(data_path)
+def encode(n_lat):
+    # load encoder
+    enc_path = './data/48_RE40_' + str(n_lat)  # to save model
+    enc_mods = load_encoder(enc_path, n_lat)
 
-# batch data
-batch_size = 200
-n_batch = len(U) // batch_size
-U = batch_data(U, batch_size, n_batch)
+    # load data
+    data_path = 'data\Generated_data.h5'
+    U = load_data(data_path)
 
-# forward pass through encoder in batches, save without batches
-U_enc = np.zeros((n_batch * batch_size, n_lat))
-for i in range(n_batch):
-    U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)
+    # batch data
+    batch_size = 200
+    n_batch = len(U) // batch_size
+    U = batch_data(U, batch_size, n_batch)
 
-print(U_enc.shape)
+    # forward pass through encoder in batches, save without batches
+    U_enc = np.zeros((n_batch * batch_size, n_lat))
+    for i in range(n_batch):
+        U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)
 
-# save encoded data
-enc_file = f'./data/48_Encoded_data_Re40_{n_lat}.h5'
-hf = h5py.File(enc_file, 'w')
-hf.create_dataset('U_enc', data=U_enc)
-hf.close()
-print(f"Successfully encoded data saved in {enc_file}")
+    print(U_enc.shape)
+
+    # save encoded data
+    enc_file = f'./data/48_Encoded_data_Re40_{n_lat}.h5'
+    hf = h5py.File(enc_file, 'w')
+    hf.create_dataset('U_enc', data=U_enc)
+    hf.close()
+    print(f"Successfully encoded data saved in {enc_file}")
+
+encode(n_lat)

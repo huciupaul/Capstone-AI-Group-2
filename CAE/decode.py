@@ -14,7 +14,7 @@ import h5py
 # load decoder
 N_lat = 5
 dec_path = './data/48_RE40_' + str(N_lat)  # to save model
-dec_mods = load_decoder(dec_path)
+dec_mods = load_decoder(dec_path, N_lat)
 
 # load encoded non-batched data
 enc_data_path = f'./data/48_Encoded_data_Re40_{N_lat}.h5'
