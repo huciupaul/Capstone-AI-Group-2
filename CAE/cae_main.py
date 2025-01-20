@@ -24,21 +24,23 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-G
 
 
 # Load data
-U = load_data(data_path, data_len=120000, downsample=2, transient=0)
+U = load_data(data_path, data_len=30000, downsample=4, transient=0)
 
 # Define training, validation, and test batches
-# n_batches = 60 000 // 200 = 300
+# n_batches = 30 000 // 200 = 150
 batch_size = 200
 
-train_batches = 240
-val_batches = 30
-test_batches = 30
+train_batches = 120
+val_batches = 15
+test_batches = 15
 
 n_batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
 
 # create encoder modules
+print('creating encoder model')
 enc_mods = create_enc_mods()
+print('created encoder model')
 
 # explicitly obtain the size of the latent space
 # using U_val instead of train to save on computation

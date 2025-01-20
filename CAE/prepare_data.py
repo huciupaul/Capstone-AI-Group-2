@@ -72,17 +72,21 @@ def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
     U_val = np.zeros((n_batches[1], batch_size, U.shape[1], U.shape[2], U.shape[3]))
     U_test = np.zeros((n_batches[2], batch_size, U.shape[1], U.shape[2], U.shape[3]))
 
+    print('batching train')
     for i in range(n_batches[0]):
         U_train[i] = U[i:n_batches[0]*batch_size:n_batches[0]].copy()
 
+    print('batching val')
     for j in range(n_batches[1]):
         U_val[j] = U[j + offset_val:n_batches[1]*batch_size+offset_val:n_batches[1]].copy()
 
+    print('batching test')
     for k in range(n_batches[2]):
         U_test[k] = U[k + offset_test:n_batches[2]*batch_size + offset_test:n_batches[2]].copy()
 
     # clear memory
     del U
+    print('original data cleared from memory')
 
     print('Data split successfully! \n')
     print(f"Data shape [train, val, test]: [{U_train.shape}, {U_val.shape}, {U_test.shape}]")
