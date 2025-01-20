@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 
 
-def load_data(path, data_len=12000, downsample=5, transient=200):
+def load_data(path, data_len=120000, downsample=4, transient=0):
     hf = h5py.File(path, 'r')
     U = np.array(hf.get('velocity_field')[transient:transient + data_len:downsample], dtype=np.float32)
     hf.close()
@@ -35,7 +35,6 @@ def load_dissip_clustering(path, data_len=30000):
     return D
 
 
-
 def load_encoded_data(path):
     with h5py.File(path, 'r') as hf:
         if 'U_enc' in hf:
@@ -46,51 +45,56 @@ def load_encoded_data(path):
             raise KeyError(f"Dataset 'U_enc' not found in the file: {path}")
 
 
-def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
+def split_batch_data(U, batch_size=200, batches=(200, 20, 20)):
     """
     Splits the dataset U into training, validation, and test batches.
 
     Parameters:
         U (np.ndarray): The input dataset of shape (total_samples, height, width, channels).
         batch_size (int): The size of each batch.
-        n_batches (tuple): Number of batches for (training, validation, testing).
+        batches (tuple): Number of batches for (training, validation, testing).
 
     Returns:
-        tuple: (U_train, U_val, U_test) datasets split into batches.
+        tuple: (U_train, U_val) datasets split into batches.
     """
 
-    print(f"Number of batches [train, val, test]: {n_batches}")
-    required_samples = sum(n_batches) * batch_size
+    print(f"Number of batches [train, val]: {batches}")
+    required_samples = sum(batches) * batch_size
 
     if U.shape[0] < required_samples:
         raise ValueError(f"Not enough samples in U ({U.shape[0]}) for the requested batches ({required_samples}).")
 
-    offset_val = n_batches[0] * batch_size
-    offset_test = offset_val + n_batches[1] * batch_size
+    offset_val = batches[0] * batch_size
 
-    U_train = np.zeros((n_batches[0], batch_size, U.shape[1], U.shape[2], U.shape[3]))
-    U_val = np.zeros((n_batches[1], batch_size, U.shape[1], U.shape[2], U.shape[3]))
-    U_test = np.zeros((n_batches[2], batch_size, U.shape[1], U.shape[2], U.shape[3]))
+    U_train = np.zeros((batches[0], batch_size, U.shape[1], U.shape[2], U.shape[3]))
+    U_val = np.zeros((batches[1], batch_size, U.shape[1], U.shape[2], U.shape[3]))
 
     print('batching train')
-    for i in range(n_batches[0]):
-        U_train[i] = U[i:n_batches[0]*batch_size:n_batches[0]].copy()
+    for i in range(batches[0]):
+        U_train[i] = U[i:batches[0]*batch_size:batches[0]].copy()
 
     print('batching val')
-    for j in range(n_batches[1]):
-        U_val[j] = U[j + offset_val:n_batches[1]*batch_size+offset_val:n_batches[1]].copy()
+    for j in range(batches[1]):
+        U_val[j] = U[j + offset_val:batches[1]*batch_size+offset_val:batches[1]].copy()
 
-    print('batching test')
-    for k in range(n_batches[2]):
-        U_test[k] = U[k + offset_test:n_batches[2]*batch_size + offset_test:n_batches[2]].copy()
+    if len(batches) == 3:
+        offset_test = offset_val + batches[1] * batch_size
+        U_test = np.zeros((batches[2], batch_size, U.shape[1], U.shape[2], U.shape[3]))
+        print('batching test')
+        for j in range(batches[2]):
+            U_test[j] = U[j + offset_test:batches[2] * batch_size + offset_test:batches[2]].copy()
 
     # clear memory
     del U
     print('original data cleared from memory')
 
     print('Data split successfully! \n')
-    print(f"Data shape [train, val, test]: [{U_train.shape}, {U_val.shape}, {U_test.shape}]")
-    return U_train, U_val, U_test
+    if len(batches) == 3:
+        print(f"Data shape [train, val, test]: [{U_train.shape}, {U_val.shape}, {U_test.shape}]")
+        return U_train, U_val, U_test
+
+    else:
+        return U_train, U_val
 
 
 def batch_data(U, b_size, n_batches):

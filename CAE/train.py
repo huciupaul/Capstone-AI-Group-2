@@ -84,7 +84,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
 
    # Early stopping and learning rate adjustment hyperparameters
     N_check = 5             # Frequency (in epochs) to check convergence and validation loss
-    patience = 41           # Stop training if no validation loss improvement for 'patience' epochs
+    patience = 31           # Stop training if no validation loss improvement for 'patience' epochs
     last_save = patience    # Epoch where the best model was last saved
 
     N_lr = 10              # Number of epochs to wait before considering learning rate reduction
@@ -178,7 +178,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
         # Plot every N_plot epochs
         if (epoch % N_plot == 0) and epoch != 0:
             # plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
-            save_path = f'mse_plot_{epoch}.h5'
+            save_path = f'mse_plot_{n_lat}_{epoch}.h5'
             save_mse_plot(vloss_plot, tloss_plot, save_path)
 
     return enc_mods, dec_mods

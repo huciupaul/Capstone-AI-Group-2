@@ -3,11 +3,11 @@ from constants import *
 
 
 def periodic_padding(image, padding=1, asym=False):
-    '''
+    """
     Create a periodic padding (same of np.pad('wrap')) around the image,
     to mimic periodic boundary conditions.
     When asym=True on the right and lower edges an additional column/row is added
-    '''
+    """
 
     if asym:
         lower_pad = image[:, :padding + 1, :]
@@ -84,8 +84,8 @@ def create_enc_mods(n_lat):
                                                        name='Enc_' + str(j) + '_Add_Layer1_' + str(i)))
         # Add fully connected layer 1 and 2
         enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
-        enc_mods[j].add(tf.keras.layers.Dense(n_hidden, activation='relu', name='Enc_' + str(j) + '_Dense1'))
-        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation='linear', name='Enc_' + str(j) + '_Dense2'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name='Enc_' + str(j) + '_Dense1'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation=act, name='Enc_' + str(j) + '_Dense2'))
 
     return enc_mods
 
@@ -101,8 +101,8 @@ def create_dec_mods(conv_out_size, conv_out_shape):
     for j in range(n_parallel):
 
         # Add fully connected layer 1 and 2. the second to map the hidden size to the appropriate dimensions
-        dec_mods[j].add(tf.keras.layers.Dense(n_hidden, activation='linear', name='Dec_' + str(j) + '_Dense1'))
-        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation='relu', name='Dec_' + str(j) + '_Dense2'))
+        dec_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name='Dec_' + str(j) + '_Dense1'))
+        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation=act, name='Dec_' + str(j) + '_Dense2'))
         dec_mods[j].add(tf.keras.layers.Reshape(conv_out_shape, name='Dec_' + str(j) + '_Reshape'))
 
         for i in range(n_layers):
