@@ -27,12 +27,12 @@ data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-G
 U = load_data(data_path, data_len=120000, downsample=2, transient=0)
 
 # Define training, validation, and test batches
-# n_batches = 60 000 // 300 = 200
-batch_size = 300
+# n_batches = 60 000 // 200 = 300
+batch_size = 200
 
-train_batches = 160
-val_batches = 20
-test_batches = 20
+train_batches = 240
+val_batches = 30
+test_batches = 30
 
 n_batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
@@ -50,7 +50,7 @@ for i, layer in enumerate(enc_mods[-1].layers):
         conv_out_size = np.prod(conv_out_shape)
         print("Output shape of the last convolutional layer:", conv_out_shape)
         print("Size of last convolutional output: ", conv_out_size)
-    elif i == (n_layers - 1) * 4 + 2 + 3:
+    elif i == (n_layers - 1) * 4 + 2 + 2:
         print("Size of the latent space:", output.shape[-1])
 
 # create decoder modules
