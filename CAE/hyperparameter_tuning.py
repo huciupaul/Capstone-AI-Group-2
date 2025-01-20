@@ -20,7 +20,7 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_96000.h5"
+data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_150000.h5"
 
 
 # Load data
@@ -29,8 +29,8 @@ U = load_data(data_path, data_len=120000, downsample=4, transient=0)
 # Define training, validation, and test batches
 batch_size = 300
 n_batches = len(U) // batch_size
-train_batches = int(batch_size*0.8)
-val_batches = int(batch_size*0.2)
+train_batches = int(n_batches*0.8)
+val_batches = int(n_batches*0.2)
 
 batches = (train_batches, val_batches)
 U_train, U_val = split_batch_data(U, batch_size=batch_size, batches=batches)

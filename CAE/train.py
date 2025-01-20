@@ -5,7 +5,7 @@ from autoencoder import cae_model
 from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
-from constants import n_lat
+
 
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
