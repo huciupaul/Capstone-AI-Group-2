@@ -13,7 +13,7 @@ def load_data(path, data_len=120000, downsample=4, transient=0):
     return U
 
 
-def load_velocity_clustering(path, data_len=30000):
+def load_velocity_clustering(path, data_len=15000):
     hf = h5py.File(path, 'r')
     U = np.array(hf.get('velocity_field')[-data_len:], dtype=np.float32)
     hf.close()
@@ -24,7 +24,7 @@ def load_velocity_clustering(path, data_len=30000):
     return U
 
 
-def load_dissip_clustering(path, data_len=30000):
+def load_dissip_clustering(path, data_len=15000):
     hf = h5py.File(path, 'r')
     D = np.array(hf.get('dissipation_rate')[-data_len:], dtype=np.float32)
     hf.close()

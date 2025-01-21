@@ -108,3 +108,30 @@ def plot_hyperparameter_tuning(txt_file):
 
     # Show the plot
     plt.show()
+
+
+def plot_evaluation(txt_file):
+    n_lat_list = []
+    nrmse_test_list = []
+
+    with open(txt_file, "r") as f:
+        next(f)  # Skip header
+        for line in f:
+            n_lat, nrmse_test = map(float, line.strip().split(","))
+            n_lat_list.append(int(n_lat))  # Ensure integers
+            nrmse_test_list.append(nrmse_test)
+
+    # Plot
+    plt.figure(figsize=(8, 5))
+    plt.plot(n_lat_list, nrmse_test_list, marker='o', linestyle='-', color='b')
+
+    plt.xlabel("Latent Size (n_lat)")
+    plt.ylabel("NRMSE (Validation)")
+    plt.title("Latent Size vs. Test NRMSE")
+    plt.xticks(n_lat_list)  # Ensure proper x-axis labels
+    plt.grid(True)
+    plt.legend()
+    plt.savefig('evaluation.pdf')
+
+    # Show the plot
+    plt.show()

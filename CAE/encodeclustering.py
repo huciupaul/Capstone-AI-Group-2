@@ -20,7 +20,7 @@ def encodeclustering(n_lat):
     data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_96000.h5"
 
     # Load velocity data
-    U = load_velocity_clustering(data_path)
+    U = load_velocity_clustering(data_path, data_len=15000)
     batch_size = 200
     n_batch = len(U) // batch_size
 
@@ -33,7 +33,7 @@ def encodeclustering(n_lat):
         U_enc[i * batch_size: (i + 1) * batch_size] = enc_model(U[i], enc_mods)
 
     # Load dissipation rate
-    D = load_dissip_clustering(data_path)
+    D = load_dissip_clustering(data_path, data_len=15000)
 
     # Ensure dissipation rate has the correct shape
     D = D.reshape(-1, 1)  # Reshape to (n_samples, 1) if it's a 1D array
@@ -53,4 +53,5 @@ def encodeclustering(n_lat):
         hf.create_dataset('U_enc', data=U_enc)
         hf.create_dataset('t', data=t)
 
+n_lat = 12
 encodeclustering(n_lat)
