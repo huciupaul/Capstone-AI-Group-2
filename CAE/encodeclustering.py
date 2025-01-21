@@ -42,7 +42,7 @@ def encodeclustering(n_lat):
     U_enc = np.hstack((U_enc, D))
 
     # Create time array
-    t = np.arange(0, len(U_enc) * 0.5, 0.5)
+    t = np.arange(0, len(U_enc) * 0.2, 0.2)
 
     print('U_enc shape:', U_enc.shape)
     print('t shape: ', t.shape)
