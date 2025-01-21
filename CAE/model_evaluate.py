@@ -1,5 +1,4 @@
 from helpers import load_encoder, load_decoder
-from hyperparameter_tuning import n_lats
 from autoencoder import cae_model
 from prepare_data import load_data, batch_data
 from constants import *
@@ -8,13 +7,14 @@ from metrics import compute_nrmse
 
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_150000.h5"
+data_path = r"C:\Users\edlyn\Downloads\Generated_data.h5"
+n_lats = [12, 32, 64]
 
 
 # Load data
-U_test = load_data(data_path, data_len=15000, downsample=0, transient=120000)
-batch_size = 250
-n_batches = 20
+U_test = load_data(data_path, data_len=300, downsample=0, transient=0)
+batch_size = 10
+n_batches = 30
 U_test = batch_data(U_test, b_size=batch_size, n_batches=n_batches)
 
 
