@@ -81,3 +81,30 @@ def read_mse_plot(file_path):
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
         return None ,None
+
+
+def plot_hyperparameter_tuning(txt_file):
+    n_lat_list = []
+    nrmse_val_list = []
+
+    with open(txt_file, "r") as f:
+        next(f)  # Skip header
+        for line in f:
+            n_lat, nrmse_train, nrmse_val = map(float, line.strip().split(","))
+            n_lat_list.append(int(n_lat))  # Ensure integers
+            nrmse_val_list.append(nrmse_val)
+
+    # Plot
+    plt.figure(figsize=(8, 5))
+    plt.plot(n_lat_list, nrmse_val_list, marker='o', linestyle='-', color='b', label='NRMSE Validation')
+
+    plt.xlabel("Latent Size (n_lat)")
+    plt.ylabel("NRMSE (Validation)")
+    plt.title("Latent Size vs. Validation NRMSE")
+    plt.xticks(n_lat_list)  # Ensure proper x-axis labels
+    plt.grid(True)
+    plt.legend()
+    plt.savefig('hyperparameter_tuning.pdf')
+
+    # Show the plot
+    plt.show()
