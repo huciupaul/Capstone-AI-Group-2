@@ -20,7 +20,7 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_150000.h5"
+data_path = r"Data\Generated_data.h5"
 
 
 # Load data

@@ -13,11 +13,11 @@ from constants import n_lat
 
 def decode(n_lat):
     # load decoder
-    dec_path = './data/48_RE40_' + str(n_lat)  # to save model
+    dec_path = './Data/48_RE40_' + str(n_lat)  # to save model
     dec_mods = load_decoder(dec_path, n_lat)
 
     # load encoded non-batched data
-    enc_data_path = f'./data/48_Encoded_data_Re40_{n_lat}.h5'
+    enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
     U_enc = load_encoded_data(enc_data_path)
 
     # batch the encoded data
@@ -41,7 +41,7 @@ def decode(n_lat):
     print("Shape of the decoded output:", U_dec.shape)
 
     # save decoded data
-    dec_file = f'./data/48_Decoded_data_Re40_{n_lat}.h5'
+    dec_file = f'./Data/48_Decoded_data_Re40_{n_lat}.h5'
     hf = h5py.File(dec_file,'w')
     hf.create_dataset('U_dec',data=U_dec)
     hf.close()

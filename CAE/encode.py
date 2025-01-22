@@ -14,11 +14,11 @@ from constants import *
 
 def encode(n_lat):
     # load encoder
-    enc_path = './data/48_RE40_' + str(n_lat)  # to save model
+    enc_path = './Data/48_RE40_' + str(n_lat)  # to save model
     enc_mods = load_encoder(enc_path, n_lat)
 
     # load data
-    data_path = 'data\Generated_data.h5'
+    data_path = 'Data\Generated_data.h5'
     U = load_data(data_path)
 
     # batch data
@@ -34,10 +34,8 @@ def encode(n_lat):
     print(U_enc.shape)
 
     # save encoded data
-    enc_file = f'./data/48_Encoded_data_Re40_{n_lat}.h5'
+    enc_file = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
     hf = h5py.File(enc_file, 'w')
     hf.create_dataset('U_enc', data=U_enc)
     hf.close()
     print(f"Successfully encoded data saved in {enc_file}")
-
-encode(n_lat)

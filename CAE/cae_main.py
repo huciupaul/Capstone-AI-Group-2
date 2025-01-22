@@ -21,7 +21,7 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"data\Generated_data.h5"
+data_path = r"Data\Generated_data.h5"
 
 # Load data
 U = load_data(data_path, data_len=1000, downsample=4, transient=0)

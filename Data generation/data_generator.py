@@ -90,7 +90,7 @@ plt.xlabel("Steps")
 plt.ylabel("Magnitude")
 plt.legend()
 plt.title("Dissipation Rate Over Time (Every 10 Steps)")
-plt.savefig('Dissip_plot.png', dpi=500, bbox_inches='tight')  # Save as a PNG file
+plt.savefig('Dissip_plot.pdf', dpi=500, bbox_inches='tight')  # Save as a PDF file
 plt.show()
 
 # Plot the kinetic energy
@@ -100,5 +100,5 @@ plt.xlabel("Steps")
 plt.ylabel("Magnitude")
 plt.legend()
 plt.title("Kinetic energy Over Time (Every 10 Steps)")
-plt.savefig('KE_plot.png', dpi=500, bbox_inches='tight')  # Save as a PNG file
+plt.savefig('KE_plot.pdf', dpi=500, bbox_inches='tight')  # Save as a PDF file
 plt.show()

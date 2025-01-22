@@ -5,7 +5,7 @@ from autoencoder import cae_model
 from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
-
+import os
 
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
@@ -95,7 +95,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
     t = time.time()  # Initialize timer for epoch timing
 
     # Path for saving model and optimizer weights
-    model_path = './data/48_RE40_' + str(n_lat)
+    model_path = './Data/48_RE40_' + str(n_lat)
 
     # Number of batches in the training and validation datasets
     train_batches = U_train.shape[0]
@@ -177,8 +177,12 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
 
         # Plot every N_plot epochs
         if (epoch % N_plot == 0) and epoch != 0:
-            # plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
-            save_path = f'CAE\Training curve plots\mse_plot_{n_lat}_{epoch}.h5'
+            # Ensure the directory exists
+            folder_path = os.path.join('CAE', 'Training curve plots')
+            os.makedirs(folder_path, exist_ok=True)
+            
+            # Save the plot
+            save_path = os.path.join(folder_path, f'mse_plot_{n_lat}_{epoch}.h5')
             save_mse_plot(vloss_plot, tloss_plot, save_path)
 
     return enc_mods, dec_mods

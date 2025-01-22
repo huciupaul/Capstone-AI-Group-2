@@ -13,7 +13,7 @@ from constants import *
 
 def encodeclustering(n_lat):
     # Load encoder
-    enc_path = './data/48_RE40_' + str(n_lat)  # to save model
+    enc_path = './Data/48_RE40_' + str(n_lat)  # to save model
     enc_mods = load_encoder(enc_path, n_lat)
 
     # Path to the dataset

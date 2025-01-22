@@ -18,7 +18,7 @@ def wrap_text(text, width=25):
 
 
 def illustrate_autoencoder(N_lat, U_test):
-    path = './data/48_RE40_'+str(N_lat)
+    path = './Data/48_RE40_'+str(N_lat)
     enc_mods_test, dec_mods_test = load_encoder(path, N_lat), load_decoder(path, N_lat)
     # U_test = get_u_test_for_illustration()
 
@@ -82,6 +82,6 @@ def illustrate_autoencoder(N_lat, U_test):
     fig.tight_layout(pad=1.0)  # Increase the padding between subplots
     plt.subplots_adjust(wspace=0.3, hspace=0.4)  # Add extra spacing between rows and columns
 
-    path = './data/48_RE40_'+str(N_lat)
+    path = './Data/48_RE40_'+str(N_lat)
     plt.savefig(path + f'/vel_fields_gt_vs_ae_n_lat{N_lat}.pdf')
     plt.show()

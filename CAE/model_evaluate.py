@@ -22,7 +22,7 @@ txtfile = "test_nrmse.txt"
 with open(txtfile, "w") as f:
     f.write("n_lat,nrmse_test\n")  # Header
     for n_lat in n_lats:
-        model_path = './data/48_RE40_' + str(n_lat)
+        model_path = './Data/48_RE40_' + str(n_lat)
         enc_mods = load_encoder(model_path, n_lat)
         dec_mods = load_decoder(model_path, n_lat)
 
