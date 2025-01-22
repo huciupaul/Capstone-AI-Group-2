@@ -69,18 +69,18 @@ def split_batch_data(U, batch_size=200, batches=(200, 20, 20)):
     U_train = np.zeros((batches[0], batch_size, U.shape[1], U.shape[2], U.shape[3]))
     U_val = np.zeros((batches[1], batch_size, U.shape[1], U.shape[2], U.shape[3]))
 
-    print('batching train')
+    print('batching train...')
     for i in range(batches[0]):
         U_train[i] = U[i:batches[0]*batch_size:batches[0]].copy()
 
-    print('batching val')
+    print('batching val...')
     for j in range(batches[1]):
         U_val[j] = U[j + offset_val:batches[1]*batch_size+offset_val:batches[1]].copy()
 
     if len(batches) == 3:
         offset_test = offset_val + batches[1] * batch_size
         U_test = np.zeros((batches[2], batch_size, U.shape[1], U.shape[2], U.shape[3]))
-        print('batching test')
+        print('batching test...')
         for j in range(batches[2]):
             U_test[j] = U[j + offset_test:batches[2] * batch_size + offset_test:batches[2]].copy()
 
