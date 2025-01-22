@@ -1,4 +1,4 @@
-last_conv_dep = 1  # output depth of last conv layer. To include D or vorticity, increase
+last_conv_dep = 2  # output depth of last conv layer. To include D or vorticity, increase
 n_fil = [6, 12, 24, last_conv_dep]  # number of filters encoder
 n_parallel = 3  # number of parallel CNNs for multiscale
 ker_size = ((3, 3), (5, 5), (7, 7))  # kernel sizes

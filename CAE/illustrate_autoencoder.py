@@ -3,34 +3,13 @@ For illustrative purposes, this script plots five samples from the first batch o
 the true velocity field, the autoencoded velocity field, and the error between the two. 
 """
 
-import os
-import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import textwrap
 
-from constants import ker_size, n_parallel, N_x, N_y
-from autoencoder import PerPad2D, cae_model
+from constants import N_x, N_y
+from autoencoder import cae_model
 from helpers import load_decoder, load_encoder
-
-from prepare_data import load_data
-from prepare_data import split_batch_data
-
-
-# def get_u_test_for_illustration():
-#     data_path = "data\Generated_data.h5"
-#     U = load_data(data_path, data_len=1200, downsample=3, transient=0)
-
-#     # Define training, validation, and test batches
-#     batch_size = 20
-#     train_batches = int(batch_size*0.8)
-#     val_batches = int(batch_size*0.1)
-#     test_batches = int(batch_size*0.1)
-
-#     batches = (train_batches, val_batches, test_batches)
-#     U_test = split_batch_data(U, batch_size=batch_size, batches=batches)[-1]
-#     U_test = U_test[0] # take the first batch
-#     return U_test
 
 
 # Function to wrap text for pretrier display of text in subplots
