@@ -47,7 +47,7 @@ Modularity-based clustering consists of six files in total. Main file is `main_w
 
 ### Implementation
 The clustering implementation is distributed across multiple scripts:
-- **`main_with_loop_only_features.py`**: Orchestrates the modularity-based clustering process, utilizing functions from supporting scripts.
+- **`main_with_loop_only_features.py`**: Main script for the modularity-based clustering process, utilizing functions from supporting scripts.
 - **`clustering_func_only_features.py`**: Contains helper functions for clustering, including graph transformations and calculations related to extreme events.
 - **`modularity.py`**: Implements core modularity calculations and modularity matrix computations.
 - **`spectralopt.py`**: Provides functions for spectral methods used to partition the network into communities.
@@ -85,7 +85,6 @@ To run the clustering process:
 
 ---
 
-This modularity-based clustering approach provides an efficient and interpretable method for identifying precursor events, facilitating a deeper understanding of extreme event dynamics in turbulent flows.
 
 ### Alternative clustering methods
 
