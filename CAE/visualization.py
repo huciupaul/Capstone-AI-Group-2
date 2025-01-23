@@ -1,10 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import h5py
+from typing import Tuple, Optional
 
-def plot_training_curve(vloss_plot, tloss_plot, epoch):
+
+def plot_training_curve(vloss_plot: np.ndarray, tloss_plot: np.ndarray, epoch: int, n_lat) -> None:
     """
     Plots training and validation loss over epochs.
+
+    Args:
+        vloss_plot (np.ndarray): Validation loss values over epochs.
+        tloss_plot (np.ndarray): Training loss values over epochs.
+        epoch (int): The number of epochs, used for saving the plot.
+
+    Output:
+        Saves and displays the MSE convergence plot.
     """
     plt.rcParams["figure.figsize"] = (15, 4)
     plt.rcParams["font.size"] = 20
@@ -33,65 +43,74 @@ def plot_training_curve(vloss_plot, tloss_plot, epoch):
     plt.legend()
 
     # Save and show the plot
-    plt.savefig(f'MSE_{epoch}.pdf')
+    plt.savefig(f'MSE_{epoch}_{n_lat}.pdf')
     plt.show()
 
 
-def save_mse_plot(vloss_plot, tloss_plot, save_path):
+def save_mse_plot(vloss_plot: np.ndarray, tloss_plot: np.ndarray, save_path: str) -> None:
     """
-        Saves validation loss and training loss arrays into an HDF5 file.
+    Saves validation loss and training loss arrays into an HDF5 file.
 
-        Parameters:
-            vloss_plot (np.ndarray): Array containing validation loss values.
-            tloss_plot (np.ndarray): Array containing training loss values.
-            file_path (str): The path to save the HDF5 file (default is "mse_plot.h5").
-        """
-    # Open an HDF5 file in write mode
+    Args:
+        vloss_plot (np.ndarray): Array containing validation loss values.
+        tloss_plot (np.ndarray): Array containing training loss values.
+        save_path (str): The path to save the HDF5 file.
+
+    Output:
+        Saves loss plots in an HDF5 file at the given path.
+    """
     with h5py.File(save_path, "w") as hf:
-        # Save the validation loss array
         hf.create_dataset("validation_loss", data=vloss_plot)
-        # Save the training loss array
         hf.create_dataset("training_loss", data=tloss_plot)
+
     print(f"Loss plots saved successfully to {save_path}")
 
 
-def read_mse_plot(file_path):
+def read_mse_plot(file_path: str) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     """
     Reads validation loss and training loss arrays from an HDF5 file.
 
-    Parameters:
+    Args:
         file_path (str): The path to the HDF5 file.
 
     Returns:
-        tuple: (vloss_plot, tloss_plot) as NumPy arrays.
+        Optional[Tuple[np.ndarray, np.ndarray]]: (vloss_plot, tloss_plot) as NumPy arrays if successful,
+        otherwise returns None.
     """
     try:
         with h5py.File(file_path, 'r') as hf:
-            # Check if datasets exist in the file
             if 'validation_loss' not in hf or 'training_loss' not in hf:
                 raise KeyError("Missing dataset(s) in HDF5 file.")
 
-            # Read datasets
-            vloss_plot = hf['validation_loss'][:]
-            tloss_plot = hf['training_loss'][:]
+            vloss_plot = np.array(hf['validation_loss'])
+            tloss_plot = np.array(hf['training_loss'])
 
         print(f"Successfully read loss data from {file_path}")
         return vloss_plot, tloss_plot
 
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
-        return None ,None
+        return None
 
 
-def plot_hyperparameter_tuning(txt_file):
+def plot_hyperparameter_tuning(txt_file: str) -> None:
+    """
+    Plots the effect of different latent sizes on the validation NRMSE.
+
+    Args:
+        txt_file (str): Path to a CSV file containing latent sizes and their corresponding NRMSE values.
+
+    Output:
+        Saves and displays the latent size vs. validation NRMSE plot.
+    """
     n_lat_list = []
     nrmse_val_list = []
 
     with open(txt_file, "r") as f:
         next(f)  # Skip header
         for line in f:
-            n_lat, nrmse_train, nrmse_val = map(float, line.strip().split(","))
-            n_lat_list.append(int(n_lat))  # Ensure integers
+            n_lat, _, nrmse_val = map(float, line.strip().split(","))  # Ignore nrmse_train
+            n_lat_list.append(int(n_lat))
             nrmse_val_list.append(nrmse_val)
 
     # Plot
@@ -101,7 +120,7 @@ def plot_hyperparameter_tuning(txt_file):
     plt.xlabel("Latent Size (n_lat)")
     plt.ylabel("NRMSE (Validation)")
     plt.title("Latent Size vs. Validation NRMSE")
-    plt.xticks(n_lat_list)  # Ensure proper x-axis labels
+    plt.xticks(n_lat_list)
     plt.grid(True)
     plt.legend()
     plt.savefig('hyperparameter_tuning.pdf')
@@ -110,7 +129,16 @@ def plot_hyperparameter_tuning(txt_file):
     plt.show()
 
 
-def plot_evaluation(txt_file):
+def plot_evaluation(txt_file: str) -> None:
+    """
+    Plots the effect of different latent sizes on the test NRMSE.
+
+    Args:
+        txt_file (str): Path to a CSV file containing latent sizes and their corresponding test NRMSE values.
+
+    Output:
+        Saves and displays the latent size vs. test NRMSE plot.
+    """
     n_lat_list = []
     nrmse_test_list = []
 
@@ -118,20 +146,20 @@ def plot_evaluation(txt_file):
         next(f)  # Skip header
         for line in f:
             n_lat, nrmse_test = map(float, line.strip().split(","))
-            n_lat_list.append(int(n_lat))  # Ensure integers
+            n_lat_list.append(int(n_lat))
             nrmse_test_list.append(nrmse_test)
 
     # Plot
     plt.figure(figsize=(8, 5))
-    plt.plot(n_lat_list, nrmse_test_list, marker='o', linestyle='-', color='b')
+    plt.plot(n_lat_list, nrmse_test_list, marker='o', linestyle='-', color='b', label="NRMSE Test")
 
     plt.xlabel("Latent Size (n_lat)")
-    plt.ylabel("NRMSE (Validation)")
+    plt.ylabel("NRMSE (Test)")
     plt.title("Latent Size vs. Test NRMSE")
-    plt.xticks(n_lat_list)  # Ensure proper x-axis labels
+    plt.xticks(n_lat_list)
     plt.grid(True)
     plt.legend()
-    plt.savefig('evaluation.pdf')
+    plt.savefig('model_test.pdf')
 
     # Show the plot
     plt.show()

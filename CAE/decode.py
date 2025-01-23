@@ -11,6 +11,15 @@ import numpy as np
 import h5py
 
 def decode(n_lat):
+    """
+    Decodes encoded velocity data using a pre-trained decoder model.
+
+    Args:
+        n_lat (int): The number of latent space dimensions.
+
+    Output:
+        Saves the decoded velocity data (`U_dec`) an HDF5 file.
+    """
     # load decoder
     dec_path = './Data/48_RE40_' + str(n_lat)  # to save model
     dec_mods = load_decoder(dec_path, n_lat)
@@ -46,5 +55,5 @@ def decode(n_lat):
     hf.close()
     print(f"successfully decoded data saved in {dec_file}")
 
-n_lat = 10
-decode(n_lat)
+# n_lat = 10
+# decode(n_lat)

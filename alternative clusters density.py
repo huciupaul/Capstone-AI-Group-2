@@ -9,8 +9,9 @@ import h5py
 # Read the data
 # =============================================================================
 
-fld = './ExampleData/'
-fln = fld + '48_Encoded_data_Re40_8_18_1.h5'
+# fld = './ExampleData/'
+# fln = fld + '48_Encoded_data_Re40_8_18_1.h5'
+fln = r"C:\Users\agata\Downloads\48_Encoded_data_Re40_12_22_1.h5"
 
 hf = h5py.File(fln, 'r')
 x = np.array(hf.get('U_enc'))
@@ -48,7 +49,7 @@ def detect_extreme_events(x, ex_dim, nr_dev=5):
     return extreme_flags
 
 ex_dim = [x_normalized.shape[1] - 1]  # Use the last column as dissipation rate
-nr_dev = 5  # Threshold for extreme events
+nr_dev = 3.75  # Threshold for extreme events
 extreme_flags = detect_extreme_events(x_normalized, ex_dim, nr_dev)
 
 # =============================================================================
