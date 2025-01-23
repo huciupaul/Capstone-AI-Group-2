@@ -20,7 +20,7 @@ start_time = time.time()
 # Read the data
 # =============================================================================
 
-fln = r"C:\Users\agata\Downloads\48_Encoded_data_Re40_8_18_1.h5"
+fln = r"C:\Users\agata\Downloads\48_Encoded_data_Re40_12_22_1.h5"
 
 print(os.getcwd())
 
@@ -63,35 +63,35 @@ x_normalized = scaler.fit_transform(x_20)
 
 # Dimensions used to define extreme events
 ex_dim = [x_normalized.shape[1] - 1] 
-nr_dev = 5  # Set the threshold for extreme events
+nr_dev = 3  # Set the threshold for extreme events
 
 # K-Means Clustering
-kmeans = KMeans(n_clusters=3, random_state=42, n_init=10, max_iter=400)
+n_clusters = 125
+kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10, max_iter=400)
 labels = kmeans.fit_predict(x_normalized)
 
 # Detect extreme events
 extreme_flags = detect_extreme_events(x_normalized, ex_dim, nr_dev)
 
-# Assign "Extreme" label based on extreme events
-cluster_names = {idx: "Normal or Precursor" for idx in range(3)}
+# Assign "Extreme" or "Non-Extreme" label based on extreme events
+cluster_names = {idx: "Non-Extreme" for idx in range(n_clusters)}
 
 # Determine which clusters are extreme
-for cluster_idx in range(3):
-    cluster_points = x_normalized[labels == cluster_idx]
-    # If the cluster contains any extreme points, label it as "Extreme"
+for cluster_idx in range(n_clusters):
+    # Check if the cluster contains any extreme points
     if np.any(extreme_flags[labels == cluster_idx]):
         cluster_names[cluster_idx] = "Extreme"
 
 # Visualize clustering with "Extreme" flagged
-plt.figure(figsize=(10, 6))
-colors = ['blue', 'orange', 'red']
+plt.figure(figsize=(12, 8))
+colors = plt.cm.tab20(np.linspace(0, 1, n_clusters))
 
-for cluster_idx in range(3):
+for cluster_idx in range(n_clusters):
     cluster_points = x_normalized[labels == cluster_idx]
     plt.scatter(
         cluster_points[:, 0],    # First column as x-axis
         cluster_points[:, -1],   # Last column as y-axis
-        c=colors[cluster_idx], label=cluster_names[cluster_idx],
+        c=[colors[cluster_idx]], label=cluster_names[cluster_idx] if cluster_idx < 20 else None,
         alpha=0.6, edgecolor="black", s=20
     )
 
@@ -102,9 +102,9 @@ plt.scatter(
     c='yellow', label="Extreme Events", edgecolor="black", s=50, marker='*'
 )
 
-plt.title("K-Means Clustering with Extreme Events Flagged")
+plt.title("K-Means Clustering with Extreme Events Flagged (125 Clusters)")
 plt.xlabel("x_0")
 plt.ylabel("x_extreme")
-plt.legend()
+plt.legend(loc='upper right', fontsize='small', ncol=2, frameon=True)
 plt.grid(True)
 plt.show()
