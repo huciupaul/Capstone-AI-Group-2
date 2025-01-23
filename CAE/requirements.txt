@@ -1,0 +1,17 @@
+astunparse==1.6.3
+einops==0.8.0
+filelock==3.17.0
+fsspec==2024.12.0
+Jinja2==3.1.5
+kolsol==1.0.1
+mkl-service==2.4.0
+mpmath==1.3.0
+networkx==3.2.1
+ply==3.11
+protobuf==3.20.3
+PyQt5==5.15.10
+pywin32==307
+sympy==1.13.1
+tensorflow==2.10.0
+torch==2.5.1
+tqdm==4.67.1
