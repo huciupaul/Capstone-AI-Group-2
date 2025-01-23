@@ -5,7 +5,7 @@ from autoencoder import cae_model
 from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
-from constants import n_lat
+import os
 
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
@@ -51,7 +51,7 @@ def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
     return loss
 
 
-def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
+def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
     
     """
     Main training loop for the convolutional autoencoder.
@@ -84,7 +84,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
 
    # Early stopping and learning rate adjustment hyperparameters
     N_check = 5             # Frequency (in epochs) to check convergence and validation loss
-    patience = 41           # Stop training if no validation loss improvement for 'patience' epochs
+    patience = 31           # Stop training if no validation loss improvement for 'patience' epochs
     last_save = patience    # Epoch where the best model was last saved
 
     N_lr = 10              # Number of epochs to wait before considering learning rate reduction
@@ -95,14 +95,14 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
     t = time.time()  # Initialize timer for epoch timing
 
     # Path for saving model and optimizer weights
-    model_path = './data/48_RE40_' + str(n_lat)
+    model_path = './Data/48_RE40_' + str(n_lat)
 
     # Number of batches in the training and validation datasets
     train_batches = U_train.shape[0]
     val_batches = U_val.shape[0]
 
     # Main training loop
-    for epoch in trange(n_epochs, desc='Epochs'):
+    for epoch in range(n_epochs):
 
         # Early stopping check
         if epoch - last_save > patience:
@@ -140,7 +140,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
                 tt_loss = np.mean(tloss_plot[epoch - N_lr:epoch])
                 if tt_loss > old_loss[epoch - N_lr]:
                     # if it is larger, load optimal val loss weights and decrease learning rate
-                    enc_mods, dec_mods = load_opt_weights(model_path, enc_mods, dec_mods)
+                    enc_mods, dec_mods = load_opt_weights(model_path, enc_mods, dec_mods, n_lat)
 
                     optimizer.learning_rate = optimizer.learning_rate * lrate_mult
                     min_weights = optimizer.get_weights()
@@ -157,7 +157,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
             if epoch > 1 and vloss_plot[epoch] < \
                     (vloss_plot[:epoch - 1][np.nonzero(vloss_plot[:epoch - 1])] if np.any(vloss_plot[:epoch - 1]) else np.array([float('inf')])).min():
                 # Saving the model weights
-                save_cae(model_path, enc_mods, dec_mods)
+                save_cae(model_path, enc_mods, dec_mods, n_lat)
 
                 # Saving optimizer parameters
                 save_optimizer_params(model_path, optimizer)
@@ -177,8 +177,12 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods):
 
         # Plot every N_plot epochs
         if (epoch % N_plot == 0) and epoch != 0:
-            # plot_training_curve(vloss_plot, tloss_plot, N_check, epoch)
-            save_path = f'mse_plot_{epoch}.h5'
+            # Ensure the directory exists
+            folder_path = os.path.join('CAE', 'Training curve plots')
+            os.makedirs(folder_path, exist_ok=True)
+            
+            # Save the plot
+            save_path = os.path.join(folder_path, f'mse_plot_{n_lat}_{epoch}.h5')
             save_mse_plot(vloss_plot, tloss_plot, save_path)
 
     return enc_mods, dec_mods

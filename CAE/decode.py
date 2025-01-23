@@ -1,6 +1,6 @@
 """
 This script is independent of the rest of the infrastructure. 
-It decodes data from the latent space and saves the encoded representation. 
+It decodes data from the latent space and saves the encoded representation in the format for clustering.
 Variables in this file do not interact with or affect variables in the rest of the codebase.
 """
 
@@ -10,39 +10,50 @@ from prepare_data import load_encoded_data, batch_data
 import numpy as np
 import h5py
 
+def decode(n_lat):
+    """
+    Decodes encoded velocity data using a pre-trained decoder model.
 
-# load decoder
-N_lat = 5
-dec_path = './data/48_RE40_' + str(N_lat)  # to save model
-dec_mods = load_decoder(dec_path)
+    Args:
+        n_lat (int): The number of latent space dimensions.
 
-# load encoded non-batched data
-enc_data_path = f'./data/48_Encoded_data_Re40_{N_lat}.h5'
-U_enc = load_encoded_data(enc_data_path)
+    Output:
+        Saves the decoded velocity data (`U_dec`) an HDF5 file.
+    """
+    # load decoder
+    dec_path = './Data/48_RE40_' + str(n_lat)  # to save model
+    dec_mods = load_decoder(dec_path, n_lat)
 
-# batch the encoded data
-batch_size = 10
-n_batch = len(U_enc) // batch_size
-U_enc = batch_data(U_enc, batch_size, n_batch)
+    # load encoded non-batched data
+    enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
+    U_enc = load_encoded_data(enc_data_path)
 
-# forward pass through decoder in batches
-U_dec = np.zeros((n_batch * batch_size, 48, 48, 2))  # Initialize unbatched output array
-start = 0  # Start index for unbatching
+    # batch the encoded data
+    batch_size = 10
+    n_batch = len(U_enc) // batch_size
+    U_enc = batch_data(U_enc, batch_size, n_batch)
 
-for batch in U_enc:
-    # Decode the batch, dec_model returns an array of shape (batch_size, 48, 48, 2))
-    decoded_batch = dec_model(batch, dec_mods)
-    
-    # Compute the range of indices to fill in U_dec
-    end = start + decoded_batch.shape[0]
-    U_dec[start:end] = decoded_batch  # Assign decoded batch to the corresponding slice
-    start = end  # Update the starting index for the next batch
+    # forward pass through decoder in batches
+    U_dec = np.zeros((n_batch * batch_size, 48, 48, 2))  # Initialize unbatched output array
+    start = 0  # Start index for unbatching
 
-print("Shape of the decoded output:", U_dec.shape)
+    for batch in U_enc:
+        # Decode the batch, dec_model returns an array of shape (batch_size, 48, 48, 2))
+        decoded_batch = dec_model(batch, dec_mods)
 
-# save decoded data
-dec_file = f'./data/48_Decoded_data_Re40_{N_lat}.h5'
-hf = h5py.File(dec_file,'w')
-hf.create_dataset('U_dec',data=U_dec)
-hf.close()
-print(f"successfully decoded data saved in {dec_file}")
+        # Compute the range of indices to fill in U_dec
+        end = start + decoded_batch.shape[0]
+        U_dec[start:end] = decoded_batch  # Assign decoded batch to the corresponding slice
+        start = end  # Update the starting index for the next batch
+
+    print("Shape of the decoded output:", U_dec.shape)
+
+    # save decoded data
+    dec_file = f'./Data/48_Decoded_data_Re40_{n_lat}.h5'
+    hf = h5py.File(dec_file,'w')
+    hf.create_dataset('U_dec',data=U_dec)
+    hf.close()
+    print(f"successfully decoded data saved in {dec_file}")
+
+# n_lat = 10
+# decode(n_lat)

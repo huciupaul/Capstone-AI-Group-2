@@ -1,42 +1,86 @@
 import h5py
 import numpy as np
+from typing import Tuple, Union
 
 
-def load_data(path, data_len=12000, downsample=5, transient=200):
-    hf = h5py.File(path, 'r')
-    U = np.array(hf.get('velocity_field')[transient:transient + data_len:downsample], dtype=np.float32)
-    hf.close()
+def load_data(path: str, data_len: int = 120000, downsample: int = 4, transient: int = 0) -> np.ndarray:
+    """
+    Loads velocity field data from an HDF5 file.
+
+    Args:
+        path (str): Path to the HDF5 file.
+        data_len (int): Number of data samples to load.
+        downsample (int): Downsampling factor.
+        transient (int): Number of transient samples to skip.
+
+    Returns:
+        np.ndarray: Loaded velocity field data with shape (samples, height, width, channels).
+    """
+    with h5py.File(path, 'r') as hf:
+        U = np.array(hf.get('velocity_field')[transient:transient + data_len:downsample], dtype=np.float32)
+
     print('Data Loaded successfully! \n')
-    print(f'total samples: {U.shape[0]} \n')
+    print(f'Total samples: {U.shape[0]} \n')
     print(f'Data Shape: {U.shape}')
 
     return U
 
 
-def load_velocity_clustering(path, data_len=30000):
-    hf = h5py.File(path, 'r')
-    U = np.array(hf.get('velocity_field')[-data_len:], dtype=np.float32)
-    hf.close()
-    print('Data Loaded successfully! \n')
-    print(f'total samples: {U.shape[0]} \n')
+def load_velocity_clustering(path: str, data_len: int = 15000) -> np.ndarray:
+    """
+    Loads the most recent velocity field data from an HDF5 file.
+
+    Args:
+        path (str): Path to the HDF5 file.
+        data_len (int): Number of data samples to load.
+
+    Returns:
+        np.ndarray: Velocity field data with shape (samples, height, width, channels).
+    """
+    with h5py.File(path, 'r') as hf:
+        U = np.array(hf.get('velocity_field')[-data_len:], dtype=np.float32)
+
+    print('Velocity Data Loaded successfully! \n')
+    print(f'Total samples: {U.shape[0]} \n')
     print(f'Data Shape: {U.shape}')
 
     return U
 
 
-def load_dissip_clustering(path, data_len=30000):
-    hf = h5py.File(path, 'r')
-    D = np.array(hf.get('dissipation_rate')[-data_len:], dtype=np.float32)
-    hf.close()
-    print('D Loaded successfully! \n')
-    print(f'total samples: {D.shape[0]} \n')
+def load_dissip_clustering(path: str, data_len: int = 15000) -> np.ndarray:
+    """
+    Loads dissipation rate data from an HDF5 file.
+
+    Args:
+        path (str): Path to the HDF5 file.
+        data_len (int): Number of data samples to load.
+
+    Returns:
+        np.ndarray: Dissipation rate data with shape (samples,).
+    """
+    with h5py.File(path, 'r') as hf:
+        D = np.array(hf.get('dissipation_rate')[-data_len:], dtype=np.float32)
+
+    print('Dissipation Rate Loaded successfully! \n')
+    print(f'Total samples: {D.shape[0]} \n')
     print(f'Data Shape: {D.shape}')
 
     return D
 
 
+def load_encoded_data(path: str) -> np.ndarray:
+    """
+    Loads encoded data from an HDF5 file.
 
-def load_encoded_data(path):
+    Args:
+        path (str): Path to the HDF5 file.
+
+    Returns:
+        np.ndarray: Encoded data array.
+
+    Raises:
+        KeyError: If 'U_enc' dataset is not found in the file.
+    """
     with h5py.File(path, 'r') as hf:
         if 'U_enc' in hf:
             U_enc = hf['U_enc'][:]
@@ -46,56 +90,98 @@ def load_encoded_data(path):
             raise KeyError(f"Dataset 'U_enc' not found in the file: {path}")
 
 
-def split_batch_data(U, batch_size=40, n_batches=(40, 10, 10)):
+def load_encoded_data_clustering(path: str) -> tuple[np.ndarray, np.ndarray]:
     """
-    Splits the dataset U into training, validation, and test batches.
+    Loads encoded velocity data and time from an HDF5 file.
 
-    Parameters:
-        U (np.ndarray): The input dataset of shape (total_samples, height, width, channels).
-        batch_size (int): The size of each batch.
-        n_batches (tuple): Number of batches for (training, validation, testing).
+    Args:
+        path (str): Path to the HDF5 file.
 
     Returns:
-        tuple: (U_train, U_val, U_test) datasets split into batches.
-    """
+        tuple[np.ndarray, np.ndarray]: Encoded velocity data and time array.
 
-    print(f"Number of batches [train, val, test]: {n_batches}")
-    required_samples = sum(n_batches) * batch_size
+    Raises:
+        KeyError: If 'U_enc' or 't' dataset is not found in the file.
+    """
+    with h5py.File(path, 'r') as hf:
+        if 'U_enc' in hf and 't' in hf:
+            U_enc = hf['U_enc'][:, :-1]  # Exclude the last column (assumed to be dissipation rate)
+            t = hf['t'][:]
+            print(f"Successfully read U_enc and t from {path}")
+            return U_enc, t
+        else:
+            raise KeyError(f"Datasets 'U_enc' or 't' not found in the file: {path}")
+
+
+def split_batch_data(
+    U: np.ndarray, batch_size: int = 200, batches: Tuple[int, int, int] = (200, 20, 20)
+) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    """
+    Splits the dataset U into training, validation, and optionally test batches.
+
+    Args:
+        U (np.ndarray): The input dataset of shape (total_samples, height, width, channels).
+        batch_size (int): The size of each batch.
+        batches (tuple[int, int, int]): Number of batches for (training, validation, testing).
+
+    Returns:
+        tuple: (U_train, U_val) or (U_train, U_val, U_test), depending on the number of batch splits.
+
+    Raises:
+        ValueError: If there are not enough samples to create the requested batches.
+    """
+    print(f"Number of batches [train, val]: {batches}")
+    required_samples = sum(batches) * batch_size
 
     if U.shape[0] < required_samples:
         raise ValueError(f"Not enough samples in U ({U.shape[0]}) for the requested batches ({required_samples}).")
 
-    offset_val = n_batches[0] * batch_size
-    offset_test = offset_val + n_batches[1] * batch_size
+    offset_val = batches[0] * batch_size
 
-    U_train = np.zeros((n_batches[0], batch_size, U.shape[1], U.shape[2], U.shape[3]))
-    U_val = np.zeros((n_batches[1], batch_size, U.shape[1], U.shape[2], U.shape[3]))
-    U_test = np.zeros((n_batches[2], batch_size, U.shape[1], U.shape[2], U.shape[3]))
+    U_train = np.zeros((batches[0], batch_size, *U.shape[1:]))
+    U_val = np.zeros((batches[1], batch_size, *U.shape[1:]))
 
-    print('batching train')
-    for i in range(n_batches[0]):
-        U_train[i] = U[i:n_batches[0]*batch_size:n_batches[0]].copy()
+    print('Batching train...')
+    for i in range(batches[0]):
+        U_train[i] = U[i * batch_size:(i + 1) * batch_size].copy()
 
-    print('batching val')
-    for j in range(n_batches[1]):
-        U_val[j] = U[j + offset_val:n_batches[1]*batch_size+offset_val:n_batches[1]].copy()
+    print('Batching val...')
+    for j in range(batches[1]):
+        U_val[j] = U[offset_val + j * batch_size:offset_val + (j + 1) * batch_size].copy()
 
-    print('batching test')
-    for k in range(n_batches[2]):
-        U_test[k] = U[k + offset_test:n_batches[2]*batch_size + offset_test:n_batches[2]].copy()
+    if len(batches) == 3:
+        offset_test = offset_val + batches[1] * batch_size
+        U_test = np.zeros((batches[2], batch_size, *U.shape[1:]))
+        print('Batching test...')
+        for j in range(batches[2]):
+            U_test[j] = U[offset_test + j * batch_size:offset_test + (j + 1) * batch_size].copy()
 
-    # clear memory
-    del U
-    print('original data cleared from memory')
+        del U  # Free memory
+        print('Original data cleared from memory')
+        print(f"Data shape [train, val, test]: [{U_train.shape}, {U_val.shape}, {U_test.shape}]")
+        return U_train, U_val, U_test
 
-    print('Data split successfully! \n')
-    print(f"Data shape [train, val, test]: [{U_train.shape}, {U_val.shape}, {U_test.shape}]")
-    return U_train, U_val, U_test
+    del U  # Free memory
+    print('Original data cleared from memory')
+    print(f"Data shape [train, val]: [{U_train.shape}, {U_val.shape}]")
+    return U_train, U_val
 
 
-def batch_data(U, b_size, n_batches):
+def batch_data(U: np.ndarray, b_size: int, n_batches: int) -> np.ndarray:
+    """
+    Splits the dataset U into smaller batches.
+
+    Args:
+        U (np.ndarray): Input dataset of shape (samples, height, width, channels).
+        b_size (int): Batch size.
+        n_batches (int): Number of batches.
+
+    Returns:
+        np.ndarray: Batched data with shape (n_batches, b_size, height, width, channels).
+    """
     batched_data = np.zeros((n_batches, b_size, *U.shape[1:]))
     for i in range(n_batches):
-        batched_data[i] = U[i*b_size: (i+1)*b_size]
-    del U
+        batched_data[i] = U[i * b_size: (i + 1) * b_size]
+
+    del U  # Free memory
     return batched_data

@@ -2,6 +2,7 @@ from autoencoder import create_enc_mods, create_dec_mods, cae_model
 from train import training_loop
 from prepare_data import split_batch_data, load_data
 from metrics import compute_nrmse
+from illustrate_autoencoder import illustrate_autoencoder
 from constants import *
 import numpy as np
 import tensorflow as tf
@@ -20,27 +21,25 @@ else:
     print("No GPU detected. TensorFlow will run on the CPU.")
 
 # Path to the dataset
-data_path = r"C:\Users\Rafael Ribeiro\Desktop\Capstone\Main Folder\Capstone-AI-Group-2\CAE\data\Generated_data_96000.h5"
-
+data_path = r"Data\Generated_data.h5"
 
 # Load data
-U = load_data(data_path, data_len=30000, downsample=4, transient=0)
+U = load_data(data_path, data_len=1000, downsample=4, transient=0)
 
 # Define training, validation, and test batches
-# n_batches = 30 000 // 200 = 150
-batch_size = 200
+batch_size = 50
+n_batches = len(U) // batch_size
+train_batches = int(n_batches*0.6)
+val_batches = int(n_batches*0.2)
+test_batches = int(n_batches*0.2)
 
-train_batches = 120
-val_batches = 15
-test_batches = 15
+batches = (train_batches, val_batches, test_batches)
+U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, batches=batches)
 
-n_batches = (train_batches, val_batches, test_batches)
-U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, n_batches=n_batches)
+N_lat = 12
 
 # create encoder modules
-print('creating encoder model')
-enc_mods = create_enc_mods()
-print('created encoder model')
+enc_mods = create_enc_mods(N_lat)
 
 # explicitly obtain the size of the latent space
 # using U_val instead of train to save on computation
@@ -53,14 +52,14 @@ for i, layer in enumerate(enc_mods[-1].layers):
         print("Output shape of the last convolutional layer:", conv_out_shape)
         print("Size of last convolutional output: ", conv_out_size)
     elif i == (n_layers - 1) * 4 + 2 + 2:
-        print("Size of the latent space:", output.shape[-1])
+        print("Size of the latent space:", output.shape[-1], "\n")
 
 # create decoder modules
 dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
 # train the model
-n_epochs = 1000
-enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods)
+n_epochs = 30
+enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat)
 
 
 U_pred_train = np.zeros((train_batches, batch_size, N_x, N_y, n_comp))
@@ -84,4 +83,8 @@ for i in range(test_batches):
     U_pred_test[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
 
 nrmse_test = compute_nrmse(U_test, U_pred_test)
-print("Average NRMSE test:", nrmse_test.numpy())
+print("Average NRMSE test:", nrmse_test.numpy(), "\n")
+
+# Plot ground truth and autoencoded snapshots for illustrative purposes
+U_test = U_test[0]  # take the first batch
+illustrate_autoencoder(N_lat, U_test)
