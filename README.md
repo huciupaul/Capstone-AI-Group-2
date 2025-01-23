@@ -30,11 +30,12 @@ In the training loop, the autoencoder is trained on the snapshots of the velocit
 
 
 ## Clustering
+Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects  
 
 ### Modularity-based Clustering
 
 ### Alternative clustering methods
-In order to prove suitability of Modularity based clustering, encoded data was also cluster by three popular clustering methods: KMeans, Agglomerative Clustering and DBSCAN (Density-Based Spatial Clustering of Applications with Noise). The similar logic for flagging extreme events was used as in modularity based clustering. 
+
 
 ## Aknowledgments
 We would like to express our gratitude to those who contributed to the success of this project.
