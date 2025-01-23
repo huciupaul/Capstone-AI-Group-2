@@ -31,6 +31,11 @@ In the training loop, the autoencoder is trained on the snapshots of the velocit
 
 ## Clustering
 
+### Modularity-based Clustering
+
+### Alternative clustering methods
+In order to prove suitability of Modularity based clustering, encoded data was also cluster by three popular clustering methods: KMeans, Agglomerative Clustering and DBSCAN (Density-Based Spatial Clustering of Applications with Noise). The similar logic for flagging extreme events was used as in modularity based clustering. 
+
 ## Aknowledgments
 We would like to express our gratitude to those who contributed to the success of this project.
 
