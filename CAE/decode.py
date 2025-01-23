@@ -1,6 +1,6 @@
 """
 This script is independent of the rest of the infrastructure. 
-It decodes data from the latent space and saves the encoded representation. 
+It decodes data from the latent space and saves the encoded representation in the format for clustering.
 Variables in this file do not interact with or affect variables in the rest of the codebase.
 """
 
@@ -9,7 +9,6 @@ from autoencoder import dec_model
 from prepare_data import load_encoded_data, batch_data
 import numpy as np
 import h5py
-from constants import n_lat
 
 def decode(n_lat):
     # load decoder
@@ -32,7 +31,7 @@ def decode(n_lat):
     for batch in U_enc:
         # Decode the batch, dec_model returns an array of shape (batch_size, 48, 48, 2))
         decoded_batch = dec_model(batch, dec_mods)
-        
+
         # Compute the range of indices to fill in U_dec
         end = start + decoded_batch.shape[0]
         U_dec[start:end] = decoded_batch  # Assign decoded batch to the corresponding slice
@@ -47,4 +46,5 @@ def decode(n_lat):
     hf.close()
     print(f"successfully decoded data saved in {dec_file}")
 
+n_lat = 10
 decode(n_lat)
