@@ -1,14 +1,20 @@
 import tensorflow as tf
 from constants import *
+from typing import List, Tuple
 
 
-def periodic_padding(image, padding=1, asym=False):
+def periodic_padding(image: tf.Tensor, padding: int = 1, asym: bool = False) -> tf.Tensor:
     """
-    Create a periodic padding (same of np.pad('wrap')) around the image,
-    to mimic periodic boundary conditions.
-    When asym=True on the right and lower edges an additional column/row is added
-    """
+    Applies periodic padding (same as np.pad('wrap')) to mimic periodic boundary conditions.
 
+    Args:
+        image (tf.Tensor): The input tensor (batch_size, height, width, channels).
+        padding (int): Number of padding pixels.
+        asym (bool): If True, adds an extra column/row on the right and lower edges.
+
+    Returns:
+        tf.Tensor: Padded image tensor.
+    """
     if asym:
         lower_pad = image[:, :padding + 1, :]
     else:
@@ -36,113 +42,131 @@ def periodic_padding(image, padding=1, asym=False):
 
 class PerPad2D(tf.keras.layers.Layer):
     """
-    Periodic Padding layer
+    Periodic Padding layer.
     """
-
-    def __init__(self, padding=1, asym=False, **kwargs):
+    def __init__(self, padding: int = 1, asym: bool = False, **kwargs):
         self.padding = padding
         self.asym = asym
         super(PerPad2D, self).__init__(**kwargs)
 
-    def get_config(self):  # needed to be able to save and load the model with this layer
+    def get_config(self) -> dict:
+        """Returns the configuration of the layer to allow saving/loading."""
         config = super(PerPad2D, self).get_config()
-        config.update({
-            'padding': self.padding,
-            'asym': self.asym,
-        })
+        config.update({'padding': self.padding, 'asym': self.asym})
         return config
 
-    def call(self, x):
+    def call(self, x: tf.Tensor) -> tf.Tensor:
+        """Applies periodic padding to the input tensor."""
         return periodic_padding(x, self.padding, self.asym)
 
 
-def create_enc_mods(n_lat):
+def create_enc_mods(n_lat: int) -> List[tf.keras.Model]:
+    """
+    Creates encoder models with different kernel sizes.
 
-    # initialize the encoders and decoders with different kernel sizes
-    enc_mods = [None] * (n_parallel)
+    Args:
+        n_lat (int): Number of latent space dimensions.
+
+    Returns:
+        List[tf.keras.Model]: List of encoder models.
+    """
+    enc_mods = [None] * n_parallel
+
     for i in range(n_parallel):
         enc_mods[i] = tf.keras.Sequential(name='Enc_' + str(i))
 
-    # generate encoder layers
+    # Generate encoder layers
     for j in range(n_parallel):
         for i in range(n_layers):
-
-            # stride=2 padding and conv
+            # Stride=2 padding and convolution
             enc_mods[j].add(PerPad2D(padding=p_size[j], asym=True,
-                                     name='Enc_' + str(j) + '_PerPad_' + str(i)))
+                                     name=f'Enc_{j}_PerPad_{i}'))
             enc_mods[j].add(tf.keras.layers.Conv2D(filters=n_fil[i], kernel_size=ker_size[j],
                                                    activation=act, padding=pad_enc, strides=2,
-                                                   name='Enc_' + str(j) + '_ConvLayer_' + str(i)))
+                                                   name=f'Enc_{j}_ConvLayer_{i}'))
 
-            # stride=1 padding and conv
+            # Stride=1 padding and convolution
             if i < n_layers - 1:
                 enc_mods[j].add(PerPad2D(padding=p_fin[j], asym=False,
-                                         name='Enc_' + str(j) + '_Add_PerPad1_' + str(i)))
+                                         name=f'Enc_{j}_Add_PerPad1_{i}'))
                 enc_mods[j].add(tf.keras.layers.Conv2D(filters=n_fil[i],
                                                        kernel_size=ker_size[j],
                                                        activation=act, padding=pad_dec, strides=1,
-                                                       name='Enc_' + str(j) + '_Add_Layer1_' + str(i)))
-        # Add fully connected layer 1 and 2
-        enc_mods[j].add(tf.keras.layers.Flatten(name='Enc_' + str(j) + '_Flatten'))
-        enc_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name='Enc_' + str(j) + '_Dense1'))
-        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation=act, name='Enc_' + str(j) + '_Dense2'))
+                                                       name=f'Enc_{j}_Add_Layer1_{i}'))
+
+        # Fully connected layers
+        enc_mods[j].add(tf.keras.layers.Flatten(name=f'Enc_{j}_Flatten'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name=f'Enc_{j}_Dense1'))
+        enc_mods[j].add(tf.keras.layers.Dense(n_lat, activation=act, name=f'Enc_{j}_Dense2'))
 
     return enc_mods
 
 
-def create_dec_mods(conv_out_size, conv_out_shape):
+def create_dec_mods(conv_out_size: int, conv_out_shape: Tuple[int, int, int]) -> List[tf.keras.Model]:
+    """
+    Creates decoder models.
 
+    Args:
+        conv_out_size (int): Number of output neurons in the first fully connected layer.
+        conv_out_shape (Tuple[int, int, int]): Shape of the tensor after reshaping.
+
+    Returns:
+        List[tf.keras.Model]: List of decoder models.
+    """
     dec_mods = [None] * n_parallel
 
     for i in range(n_parallel):
-        dec_mods[i] = tf.keras.Sequential(name='Dec_' + str(i))
+        dec_mods[i] = tf.keras.Sequential(name=f'Dec_{i}')
 
-    # generate decoder layers
+    # Generate decoder layers
     for j in range(n_parallel):
-
-        # Add fully connected layer 1 and 2. the second to map the hidden size to the appropriate dimensions
-        dec_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name='Dec_' + str(j) + '_Dense1'))
-        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation=act, name='Dec_' + str(j) + '_Dense2'))
-        dec_mods[j].add(tf.keras.layers.Reshape(conv_out_shape, name='Dec_' + str(j) + '_Reshape'))
+        dec_mods[j].add(tf.keras.layers.Dense(n_hidden, activation=act, name=f'Dec_{j}_Dense1'))
+        dec_mods[j].add(tf.keras.layers.Dense(conv_out_size, activation=act, name=f'Dec_{j}_Dense2'))
+        dec_mods[j].add(tf.keras.layers.Reshape(conv_out_shape, name=f'Dec_{j}_Reshape'))
 
         for i in range(n_layers):
-
-            # initial padding of latent space
+            # Initial padding of latent space
             if i == 0:
-                dec_mods[j].add(PerPad2D(padding=p_dec, asym=False,
-                                         name='Dec_' + str(j) + '_PerPad_' + str(i)))
+                dec_mods[j].add(PerPad2D(padding=p_dec, asym=False, name=f'Dec_{j}_PerPad_{i}'))
 
-                # Transpose convolution with stride = 2
+            # Transpose convolution with stride = 2
             dec_mods[j].add(tf.keras.layers.Conv2DTranspose(filters=n_dec[i],
-                                                            output_padding=None, kernel_size=ker_size[j],
+                                                            kernel_size=ker_size[j],
                                                             activation=act, padding=pad_dec, strides=2,
-                                                            name='Dec_' + str(j) + '_ConvLayer_' + str(i)))
+                                                            name=f'Dec_{j}_ConvLayer_{i}'))
 
             # Convolution with stride=1
             if i < n_layers - 1:
                 dec_mods[j].add(tf.keras.layers.Conv2D(filters=n_dec[i],
                                                        kernel_size=ker_size[j],
                                                        activation=act, padding=pad_dec, strides=1,
-                                                       name='Dec_' + str(j) + '_ConvLayer1_' + str(i)))
+                                                       name=f'Dec_{j}_ConvLayer1_{i}'))
 
-        # crop and final linear convolution with stride=1
+        # Final layers
         dec_mods[j].add(tf.keras.layers.CenterCrop(p_crop + 2 * p_fin[j],
                                                    p_crop + 2 * p_fin[j],
-                                                   name='Dec_' + str(j) + '_Crop_' + str(i)))
+                                                   name=f'Dec_{j}_Crop_{i}'))
         dec_mods[j].add(tf.keras.layers.Conv2D(filters=n_comp,
                                                kernel_size=ker_size[j],
                                                activation='linear', padding=pad_dec, strides=1,
-                                               name='Dec_' + str(j) + '_Final_Layer'))
+                                               name=f'Dec_{j}_Final_Layer'))
 
     return dec_mods
 
 
 def cae_model(inputs, enc_mods, dec_mods, is_train=False):
-    '''
-    Forward pass of Multiscale autoencoder, taken from Hasegawa 2020. The contribution of the CNNs at different
-    scales are simply summed.
-    '''
+    """
+    Forward pass of Multiscale Autoencoder.
 
+    Args:
+        inputs (tf.Tensor): Input tensor.
+        enc_mods (List[tf.keras.Model]): List of encoder models.
+        dec_mods (List[tf.keras.Model]): List of decoder models.
+        is_train (bool): Whether the model is in training mode.
+
+    Returns:
+        Tuple[tf.Tensor, tf.Tensor]: Encoded and decoded representations.
+    """
     # sum of the contributions of the different CNNs
     encoded = 0
     for enc_mod in enc_mods:
@@ -156,10 +180,16 @@ def cae_model(inputs, enc_mods, dec_mods, is_train=False):
 
 
 def enc_model(U, enc_mods):
-    '''
-    This is only the encoder module
-    '''
+    """
+    Encoder module.
 
+    Args:
+        U (tf.Tensor or np.ndarray): Input tensor.
+        enc_mods (List[tf.keras.Model]): List of encoder models.
+
+    Returns:
+        tf.Tensor: Encoded representation.
+    """
     encoded = 0
     for enc_mod in enc_mods:
         encoded += enc_mod(U, training=False)
@@ -168,10 +198,16 @@ def enc_model(U, enc_mods):
 
 
 def dec_model(encoded, dec_mods):
-    '''
-    This is only the decoder module
-    '''
+    """
+    Decoder module.
 
+    Args:
+        encoded (tf.Tensor or nd.arrray): Encoded tensor.
+        dec_mods (List[tf.keras.Model]): List of decoder models.
+
+    Returns:
+        tf.Tensor: Decoded output.
+    """
     decoded = 0
     for dec_mod in dec_mods:
         decoded += dec_mod(encoded, training=False)

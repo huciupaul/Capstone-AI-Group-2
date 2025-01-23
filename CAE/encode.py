@@ -13,6 +13,16 @@ from constants import *
 
 
 def encode(n_lat):
+    """
+    Encodes velocity data into a latent space using a pre-trained encoder model and
+    saves the encoded representation
+
+    Args:
+        n_lat (int): Number of latent space dimensions.
+
+    Output:
+        Saves the encoded velocity data (`U_enc`) to an HDF5 file.
+    """
     # load encoder
     enc_path = './Data/48_RE40_' + str(n_lat)  # to save model
     enc_mods = load_encoder(enc_path, n_lat)
