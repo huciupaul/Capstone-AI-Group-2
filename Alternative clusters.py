@@ -29,9 +29,7 @@ x = np.array(hf.get('U_enc'))
 
 print(f"Shape of x: {x.shape}")
 
-# Use only 20% of the data
-num_elem = int(len(x) * 0.2)
-x_20 = x[:num_elem]
+
 
 def detect_extreme_events(x, ex_dim, nr_dev=7):
     """
@@ -59,19 +57,19 @@ def detect_extreme_events(x, ex_dim, nr_dev=7):
 # Normalize the data
 # =============================================================================
 scaler = StandardScaler()
-x_normalized = scaler.fit_transform(x_20)
+x_normalized = scaler.fit_transform(x)
 
 # Dimensions used to define extreme events
 ex_dim = [x_normalized.shape[1] - 1] 
-nr_dev = 3  # Set the threshold for extreme events
+nr_dev = 3.5  # Set the threshold for extreme events
 
 # K-Means Clustering
 n_clusters = 125
 kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10, max_iter=400)
-labels = kmeans.fit_predict(x_normalized)
+labels = kmeans.fit_predict(x)
 
 # Detect extreme events
-extreme_flags = detect_extreme_events(x_normalized, ex_dim, nr_dev)
+extreme_flags = detect_extreme_events(x, ex_dim, nr_dev)
 
 # Assign "Extreme" or "Non-Extreme" label based on extreme events
 cluster_names = {idx: "Non-Extreme" for idx in range(n_clusters)}
