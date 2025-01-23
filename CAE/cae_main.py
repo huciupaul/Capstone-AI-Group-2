@@ -52,7 +52,7 @@ for i, layer in enumerate(enc_mods[-1].layers):
         print("Output shape of the last convolutional layer:", conv_out_shape)
         print("Size of last convolutional output: ", conv_out_size)
     elif i == (n_layers - 1) * 4 + 2 + 2:
-        print("Size of the latent space:", output.shape[-1])
+        print("Size of the latent space:", output.shape[-1], "\n")
 
 # create decoder modules
 dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
@@ -83,7 +83,7 @@ for i in range(test_batches):
     U_pred_test[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
 
 nrmse_test = compute_nrmse(U_test, U_pred_test)
-print("Average NRMSE test:", nrmse_test.numpy())
+print("Average NRMSE test:", nrmse_test.numpy(), "\n")
 
 # Plot ground truth and autoencoded snapshots for illustrative purposes
 U_test = U_test[0]  # take the first batch

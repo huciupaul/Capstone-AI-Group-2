@@ -102,7 +102,7 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
     val_batches = U_val.shape[0]
 
     # Main training loop
-    for epoch in trange(n_epochs, desc='Epochs'):
+    for epoch in range(n_epochs):
 
         # Early stopping check
         if epoch - last_save > patience:
