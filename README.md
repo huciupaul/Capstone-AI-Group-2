@@ -43,11 +43,52 @@ For hyperparameter tuning, the `hyperparameter_tuning.py` script performs a grid
 ### Encoding and decoding
 
 ## Clustering
-Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. 
+Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. 
 
-### Modularity-based Clustering
+### Implementation
+The clustering implementation is distributed across multiple scripts:
+- **`main_with_loop_only_features.py`**: Orchestrates the modularity-based clustering process, utilizing functions from supporting scripts.
+- **`clustering_func_only_features.py`**: Contains helper functions for clustering, including graph transformations and calculations related to extreme events.
+- **`modularity.py`**: Implements core modularity calculations and modularity matrix computations.
+- **`spectralopt.py`**: Provides functions for spectral methods used to partition the network into communities.
+- **`_divide.py`**: Implements the division of communities into subgroups based on modularity optimization.
+
+The clustering algorithm takes preprocessed velocity field data as input, applies modularity maximization, and saves the resulting clusters as `.npz` files for further analysis.
+
+---
+
+### Features
+Key features of the clustering implementation include:
+1. **Spectral Clustering**: Uses spectral methods to partition the network into communities by iteratively optimizing the modularity metric.
+2. **Refinement**: The clustering process includes refinement steps to enhance the modularity and ensure well-defined community structures.
+3. **Analysis of Extreme Events**: Special consideration is given to precursor and extreme clusters, analyzing their relationships and transitions.
+4. **Visualization**: Results are visualized as:
+   - Phase space plots
+   - Tessellated phase space plots
+   - Dissipation time series with color-coded clusters.
+
+---
+
+### Post-Processing
+Post-processing is handled in **`main_load_clusters.py`**, which:
+- Computes the average time between precursor and extreme events.
+- Identifies false positives and negatives in precursor detection.
+- Generates detailed visualizations to understand the dynamics of the identified clusters.
+
+---
+
+### Usage
+To run the clustering process:
+1. Ensure the dependencies listed in `clustering/conda_pack.txt` and `clustering/tf_package_list.txt` are installed.
+2. Use **`main_with_loop_only_features.py`** to execute the clustering pipeline. 
+3. Analyze the saved clusters with **`main_load_clusters.py`** for further insights.
+
+---
+
+This modularity-based clustering approach provides an efficient and interpretable method for identifying precursor events, facilitating a deeper understanding of extreme event dynamics in turbulent flows.
 
 ### Alternative clustering methods
+
 
 
 ## Aknowledgments
