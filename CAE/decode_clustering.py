@@ -52,7 +52,7 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
     print('U_enc shape:', U_enc.shape)  # Expected: (n_batch, batch_size, latent_dim)
 
     # Save decoded data with time field
-    enc_file = f'./data/48_Decoded_data_Re40_{n_lat}_23_1.h5'
+    enc_file = f'./Data/48_Decoded_data_Re40_{n_lat}.h5'
     with h5py.File(enc_file, 'w') as hf:
         hf.create_dataset('U_dec', data=U_dec)  # Saves the batched encoded data
 
@@ -62,5 +62,5 @@ n_lat = 10
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = 'path to enc data'
+enc_data_path = f"./Data/48_Encoded_data_Re40_10.h5" #path to encoded data
 decodeclustering(n_lat, enc_data_path, field='Precursor_Centroids')

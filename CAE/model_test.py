@@ -7,7 +7,9 @@ from metrics import compute_nrmse
 
 
 # Path to the dataset
-data_path: str = r"C:\Users\edlyn\Downloads\Generated_data.h5"
+fld = './Data/' #Path to folder with generated data
+data_path = fld + 'Generated_data.h5' #Generated Data file name
+
 n_lats: list[int] = [10]  # List of latent space dimensions to test
 
 # Load test dataset, 120 000 already used for training and val
