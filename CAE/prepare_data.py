@@ -68,7 +68,7 @@ def load_dissip_clustering(path: str, data_len: int = 15000) -> np.ndarray:
     return D
 
 
-def load_encoded_data(path: str, field: str) -> np.ndarray:
+def load_encoded_data(path: str, field: str = 'U_enc') -> np.ndarray:
     """
     Loads encoded data from an HDF5 file.
 
@@ -88,7 +88,7 @@ def load_encoded_data(path: str, field: str) -> np.ndarray:
             print(f"Successfully read U_enc from {path}")
             return U_enc
         else:
-            raise KeyError(f"Dataset 'U_enc' not found in the file: {path}")
+            raise KeyError(f"Dataset '{field}' not found in the file: {path}")
 
 
 def split_batch_data(

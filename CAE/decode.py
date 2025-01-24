@@ -10,6 +10,7 @@ from prepare_data import load_encoded_data, batch_data
 import numpy as np
 import h5py
 
+
 def decode(n_lat: int, data_path: str, field='U_enc'):
     """
     Decodes encoded velocity data using a pre-trained decoder model.
@@ -35,8 +36,8 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
     U_enc = batch_data(U_enc, batch_size, n_batch)
 
     # forward pass through decoder in batches
-    U_dec = np.zeros((n_batch * batch_size, 48, 48, 2))  # Initialize unbatched output array
-    start = 0  # Start index for unbatching
+    U_dec = np.zeros((n_batch * batch_size, 48, 48, 2))  # Initialize output array
+    start = 0  # Start index for output
 
     for batch in U_enc:
         # Decode the batch, dec_model returns an array of shape (batch_size, 48, 48, 2))
@@ -56,10 +57,11 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
     hf.close()
     print(f"successfully decoded data saved in {dec_file}")
 
+
 n_lat = 10
 
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = pass
+enc_data_path = 'path to enc data'
 decode(n_lat, enc_data_path, field='Precursor_Centroids')
