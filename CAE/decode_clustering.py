@@ -4,7 +4,7 @@ It decodes the data output from the clustering algorithm.
 Variables in this file do not interact with or affect variables in the rest of the codebase.
 """
 
-from helpers import load_encoder
+from helpers import load_decoder
 from autoencoder import dec_model
 from prepare_data import batch_data, load_encoded_data
 import numpy as np
@@ -27,10 +27,10 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
     """
     # Load encoder
     dec_path = f'./Data/48_RE40_{n_lat}'  # Path to the saved decoder model
-    dec_mods = load_encoder(dec_path, n_lat)
+    dec_mods = load_decoder(dec_path, n_lat)
 
     # Load velocity data
-    U_enc = load_encoded_data(data_path, field=field)[:,:] 
+    U_enc = load_encoded_data(data_path, field=field)
     batch_size = 1
     n_batch = len(U_enc) // batch_size
 

@@ -1,56 +1,82 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import textwrap
 import h5py
 from constants import N_x, N_y
 
-# Function to wrap text for pretrier display of text in subplots
-def wrap_text(text, width=25):
-    return "\n".join(textwrap.wrap(text, width))
+def plot_physical_interpretation(U_test, N_lat, centroid_type, save_path):
+    """
+    Plots the decoded centroid data in a grid format (5x2) and saves it to a PDF.
 
-
-def plot_physical_interpretation(U_test, N_lat):
-
-    # grid
+    Args:
+        U_test: Decoded velocity field data (array of shape (num_centroids, N_x, N_y, channels)).
+        N_lat: Number of latent dimensions (for labeling purposes).
+        centroid_type: Type of centroids (e.g., "Precursor", "Extreme", "Normal").
+        save_path: Path to save the output PDF.
+    """
+    # Grid for the velocity field
     X = np.linspace(0, 2 * np.pi, N_x) 
     Y = np.linspace(0, 2 * np.pi, N_y) 
     XX = np.meshgrid(X, Y, indexing='ij')
 
-    # plot n snapshots and their reconstruction in the test set.
-    n_snapshots = 5
-    plt.rcParams["figure.figsize"] = (15, 4 * n_snapshots)
-    plt.rcParams["font.size"] = 14
-    fig, ax = plt.subplots(n_snapshots, 3)
-    
-    for i in range(n_snapshots):
-        print(f"Plotting snapshot {i+1}/{n_snapshots}")
-        # testing data
-        u = U_test.copy()
+    # Plot settings
+    num_centroids = U_test.shape[0]  # Number of centroids
+    grid_rows = 2  # Fixed number of rows
+    grid_cols = 5  # Fixed number of columns
+    plt.rcParams["figure.figsize"] = (15, 6)  # Adjust figure size
+    plt.rcParams["font.size"] = 12
+
+    fig, axes = plt.subplots(grid_rows, grid_cols, figsize=(15, 8))
+    axes = axes.flatten()  # Flatten for easy iteration
+
+    # Loop through the centroids and plot each
+    for i in range(num_centroids):
+        ax = axes[i]
+        u = U_test[i, :, :, 0]  # Take the first channel (e.g., u-velocity)
         vmax = u.max()
         vmin = u.min()
         
-        # truth
-        ax_truth = plt.subplot(n_snapshots, 3, i * 3 + 1)
-        CS0 = ax_truth.contourf(XX[0], XX[1], u[0, :, :, 0],
-                                levels=10, cmap='coolwarm', vmin=vmin, vmax=vmax)
-        cbar = plt.colorbar(CS0, ax=ax_truth)
-        CS = ax_truth.contour(XX[0], XX[1], u[0, :, :, 0],
-                            levels=10, colors='black', linewidths=.5, linestyles='solid',
-                            vmin=vmin, vmax=vmax)
-        title = wrap_text(f'True velocity field at snapshot {i+1}')
-        ax_truth.set_title(title, pad=20, fontsize=12)
-    
-    # Adjust spacing between plots
-    fig.tight_layout(pad=1.0)  # Increase the padding between subplots
-    plt.subplots_adjust(wspace=0.3, hspace=0.4)  # Add extra spacing between rows and columns
+        # Plot filled contours
+        contourf = ax.contourf(XX[0], XX[1], u, levels=10, cmap='coolwarm', vmin=vmin, vmax=vmax)
+        plt.colorbar(contourf, ax=ax)  # Add colorbar to each plot
 
-    # path = './Data/48_RE40_'+str(N_lat)
-    plt.savefig(f'./physical_interpretation_{N_lat}.pdf')
+        # Overlay line contours
+        contour = ax.contour(XX[0], XX[1], u, levels=10, colors='black', linewidths=0.5)
+
+        # Set the title for each subplot
+        ax.set_title(f"Centroid {i + 1}", fontsize=10)
+        ax.axis('off')  # Turn off axes for a cleaner look
+
+    # Remove unused axes if there are fewer centroids
+    for i in range(num_centroids, len(axes)):
+        fig.delaxes(axes[i])
+
+    # Set the main title for the entire plot
+    fig.suptitle(f"Decoded Velocity Fields - {centroid_type} Centroids", fontsize=16, y=0.98)
+
+    # Save the figure to a PDF
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  # Adjust layout to fit title
+    plt.savefig(save_path)
     plt.show()
 
-path = r'CAE\Data\48_Decoded_data_Re40_10.h5'
+
+# Path to the HDF5 file (comment/uncomment based on the centroids to plot)
+# path = r'.\Data\48_Decoded_data_Re40_10_Precursor_Centroids.h5'
+path = r'.\Data\48_Decoded_data_Re40_10_Extreme_Centroids.h5'
+# path = r'.\Data\48_Decoded_data_Re40_10_Normal_Centroids.h5'
+
+# Extract data from the HDF5 file
 with h5py.File(path, 'r') as hf:
-    print(list(hf.keys()))
+    print("Keys in HDF5 file:", list(hf.keys()))
     U = np.array(hf.get('U_dec'), dtype=np.float32)
 
-plot_physical_interpretation(U, 10)
+# Extract the type of centroids (e.g., "Precursor", "Extreme", "Normal") from the path
+centroid_type = path.split('_')[-2]  # Extracts e.g., "Precursor", "Extreme", or "Normal"
+
+# Plot the centroids
+save_path = f"./Decoded_{centroid_type}_Centroids.pdf"  # Save file with centroid type
+plot_physical_interpretation(
+    U_test=U,
+    N_lat=10,  # Latent space dimension
+    centroid_type=centroid_type,  # Type of centroid
+    save_path=save_path  # Path to save the output PDF
+)
