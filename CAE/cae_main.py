@@ -37,7 +37,7 @@ test_batches = int(n_batches*0.2)
 batches = (train_batches, val_batches, test_batches)
 U_train, U_val, U_test = split_batch_data(U, batch_size=batch_size, batches=batches)
 
-N_lat = 12
+N_lat = 10
 
 # create encoder modules
 enc_mods = create_enc_mods(N_lat)
