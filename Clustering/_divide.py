@@ -3,6 +3,7 @@
 import numpy as np
 import networkx as nx
 from scipy import sparse
+from scipy.sparse import issparse
 import modularity as modularity
 
 
@@ -30,6 +31,8 @@ def _divide(network, community_dict, comm_index, B, refine=False):
     #Compute the modularity matrix specific to the nodes in comm_nodes using the get_mod_matrix function. This reduces the modularity matrix to focus only on the community of interest.
     B_hat_g = modularity.get_mod_matrix(network, comm_nodes, B)
 
+    is_sparse = issparse(B_hat_g)
+    #print("Is the matrix sparse?", is_sparse)
     # compute the top eigenvector u₁ and β₁
     #For small matrices (< 3 nodes), use largest_eig to compute the largest eigenvalue and its eigenvector.
     if B_hat_g.shape[0] < 3:
