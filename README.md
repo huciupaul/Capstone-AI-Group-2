@@ -74,7 +74,7 @@ During encoding, the model is loaded and the dataset is batched according to the
 
 The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, and decodes it to the original dimension and shape. Finally, the decoded dataset is created and saved to another HDF5 file for visualization.
 
-### Usage
+### Usage for CAE
 Run the files as follows according to the intended process.
 1. To train the model, run `cae_main.py`.
 2. To perform hyperparameter tuning, run  `hyperparameter_tuning.py`.
@@ -125,12 +125,16 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 
 ---
 
-### Usage
+### Usage for Clustering
 To run the clustering process:
 1. Ensure the dependencies listed in `clustering/requirements_clustering.txt` are installed.
-2. Ensure that file paths are defined correctly for your dataset
+2. Ensure that file paths are defined correctly for your dataset.
+   a. The encoded data file from CAE (ex.: `48_Encoded_data_Re40_10.h5`) should be copied into the modularity based clustering data folder (`.\Modularity Based Clustering\Data\`)
 3. Use **`main_with_loop_only_features.py`** to execute the clustering pipeline. 
-4. Analyze the saved clusters with **`main_load_clusters.py`** for further insights and to save the precursor cluster centroids.
+4. Analyze the saved clusters with **`main_load_clusters.py`** for further insights and to save the precursor cluster centroids (Cluster centroids saved in `.\Modularity Based Clustering\Data\` as `Cluster_Centroids.h5`)
+5. To decode the `Cluster_Centroids.h5`, return to the CAE folder and run file `decode_clustering.py`. 
+   a. Before running, place a copy of `Cluster_Centroids.h5` in the CAE data folder ( `.\CAE\Data\`) 
+6. To visualize the decoded precursor cluster plot, run `physical_interpretation.py` from CAE
 
 ### Remark
 `main_with_loop_only_features.py` encounters a value error (ex: 'ValueError: 1411845100 is not in list') when running in a traditional IDE. Running in a virtual linux enviroment (we used Ubuntu terminal) resolves this error.
