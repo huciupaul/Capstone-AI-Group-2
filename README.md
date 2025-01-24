@@ -6,6 +6,29 @@ This project aims to identify precursor flow states to extreme events using the 
 
 The codebase is written in Python, mainly using the TensorFlow library. This project is part of TU Delft course TI3165TU - Capstone Applied AI project 2024/25, and is supervised by Nguyen Anh Khoa Doan.
 
+## Table of Contents
+- [Environment Requirements](#environment-requirements)
+- [Data Generation](#data-generation)
+  - [Usage - Data Generation](#usage---data-generation)
+- [Multiscale Convolutional Autoencoder (CAE)](#multiscale-convolutional-autoencoder-cae)
+  - [Architecture](#architecture)
+  - [Training and Hyperparameter Tuning](#training-and-hyperparameter-tuning)
+  - [Testing](#testing)
+  - [Encoding and Decoding](#encoding-and-decoding)
+  - [Usage for CAE](#usage-for-cae)
+- [Clustering](#clustering)
+  - [Implementation](#implementation)
+  - [Features](#features)
+  - [Post-Processing](#post-processing)
+  - [Usage for Clustering](#usage-for-clustering)
+  - [Alternative Clustering Methods](#alternative-clustering-methods)
+    - [K-Means Clustering](#k-means-clustering)
+    - [Agglomerative Clustering](#agglomerative-clustering)
+    - [DBSCAN Clustering](#dbscan-clustering)
+- [Visualization](#visualisation)
+- [Acknowledgments](#acknowledgments)
+
+
 ### Environment Requirements
 This code is tested on TensorFlow version 2.10 and python 3.9. The required packages for the data generation and the CAE can be installed with pip using:
 
@@ -103,7 +126,7 @@ Run the files as follows according to the intended process.
 
 
 
-## Clustering
+## Modularity-based Clustering
 Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
 
 ### Implementation
