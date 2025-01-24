@@ -61,5 +61,5 @@ n_lat = 10
 
 enc_data_path = f"./Data/Cluster_Centroids.h5" #path to encoded data
 decodeclustering(n_lat, enc_data_path, field='Precursor_Centroids') 
-decodeclustering(n_lat, enc_data_path, field='Extreme_Centroids') 
-decodeclustering(n_lat, enc_data_path, field='Normal_Centroids') 
+#decodeclustering(n_lat, enc_data_path, field='Extreme_Centroids') 
+#decodeclustering(n_lat, enc_data_path, field='Normal_Centroids') 
