@@ -84,7 +84,7 @@ The encoding and decoding of the data are done using the two functions from `enc
 
 During encoding, the model is loaded and the data is batched according to the preset `batch_size` and `n_batches`. Subsequently, the data is forward passed through the loaded encoder and the encoded data is saved to a HDF5 file.
 
-The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, and decodes it to the original dimension and shape. Finally, the decoded dataset is saved to another HDF5 file for visualization.
+The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, decodes it to the original dimension and saves it. Both encoded and decoded data are saved in an unbatched format for general use.
 
 ### Usage for CAE
 Run the files as follows according to the intended process.
@@ -93,6 +93,8 @@ Run the files as follows according to the intended process.
 3. To test the model, run `model_test.py`
 4. To encode velocity fields, run `encode_general.py`
 5. To decode the latent variables, run `decode_general.py`
+6. To encode specifically for the clustering module, run `encode_clustering.py`
+7. To decode data specifically from the clustering module, run `decode_clustering.py`
 
 
 
