@@ -23,14 +23,14 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
         Saves the decoded velocity data (`U_dec`) an HDF5 file.
     """
     # load decoder
-    dec_path = './Data/48_RE40_' + str(n_lat)  # to save model
+    dec_path = './Data/48_RE40_' + str(n_lat)  # path to save model
     dec_mods = load_decoder(dec_path, n_lat)
 
     # load encoded non-batched data
     U_enc = load_encoded_data(data_path, field)
 
     # batch the encoded data
-    batch_size = 21
+    batch_size = 19 #num of saved clusters
     n_batch = len(U_enc) // batch_size
     U_enc = batch_data(U_enc, batch_size, n_batch)
 
@@ -61,5 +61,5 @@ n_lat = 10
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = pass
+enc_data_path = r"C:\Users\Rafael Ribeiro\Documents\GitHub\Capstone-AI-Group-2\Clustering\Data\Precursor_Centroids.h5"
 decode(n_lat, enc_data_path, field='Precursor_Centroids')
