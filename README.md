@@ -161,6 +161,7 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 - Computes the average time between precursor and extreme events.
 - Identifies false positives and negatives in precursor detection.
 - Generates detailed visualizations to understand the dynamics of the identified clusters.
+
 Additionally, `physical_interpretation.py` from the CAE folder deodes latent space variables, inlcuding the centroids of normal, precursor and extreme clusters, **in accordance with requirement C1**
 
 ---
@@ -200,7 +201,7 @@ These clustering methods are applied to a normalized and reduced subset to reduc
 - Treats outliers as noise.
 - Identifies extreme events by detecting points deviating significantly from the mean (±5 standard deviations)
 
-## Visualisation
+## Visualization
 Each file plots the clusters found, as well as the extreme events in a 2D scatter plot, showing the x_extreme against the x_0 value.
 
 
