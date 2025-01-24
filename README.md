@@ -17,7 +17,7 @@ For clustering, the relevant depedencies can be found at `clustering/requirement
 This can be installed with:
 
 ```bash 
-pip install -r /path/to/requirements_clustering.txt
+pip install -r requirements_clustering.txt
 ```
 
 ## Data generation
@@ -32,28 +32,27 @@ Model tuning is performed in `hyperparameter_tuning.py` and the output is saved 
 The CAE consists of an encoder and a decoder. The encoder consists of three convolutional layers with kernel sizes (3x3), (5x5), (7x7), followed by two fully connected layers to further reduce the the dimension of the data to the desired parameter `N_lat`. All the layers used `tanh` activation functions. The decoder architecture is the mirror image of the encoder. The architecture of the convolutioanl layers is directly imported from [Alberto Racca CAE], which is inspired by the work of [Hasegawa 2020](https://doi.org/10.1007/s00162-020-00528-w). The CAE architecture is defined in `autoencoder.py`.
 
 ### Training and hyperparameter tuning
-In `train.py` the training loop orchestrates the optimization of the CAE. The autoencoder is trained on the snapshots of the velocity vector space. At its core, it iteratively minimizes the reconstruction error (Mean Squared Error) between the input data and the autoencoder's output using the Adam optimizer.  The loop incorporates several features, including:
+In `train.py` the training loop runs all the steps required for the iterative training of the CAE model. The CAE is trained on the snapshots of the velocity vector space. At its core, it iteratively minimizes the reconstruction error (Mean Squared Error) between the input data and the autoencoder's output using the Adam optimizer.  The loop incorporates several features, including:
 
 * Learning Rate Adaptation: The learning rate decreases dynamically by a factor `lrate_mult` when the training loss plateaus, enhancing convergence stability.
 * Early Stopping: Training stops if the validation loss does not improve for a predefined `patience` number of epochs, preventing overfitting and saving computational resources.
 * Validation Monitoring: The validation loss is computed every `N_check` epochs to evaluate generalization performance.
 * Checkpointing: The best-performing model weights and optimizer parameters are saved based on the lowest validation loss. If the training loss does not improve compared to the average of `N_lr` previous epochs, the learning rate is adapted and the model is reset to a previous best-performing state.
-* Visualization: Loss plots are saved at `N_plot` to visualize training and validation trends.
+* Visualization: Loss plots are saved every `N_plot` epochs to visualize training and validation trends.
 
-For hyperparameter tuning, the `hyperparameter_tuning.py` script performs a grid search over a set of latent space, `n_lat` dimensions. The script trains the CAE for each latent space size and saves the results to `hyperparameter_tuning.txt`. The optimal `n_lat` was selected through a trade-off between NRMSE and its size. 
+For hyperparameter tuning, the `hyperparameter_tuning.py` script trains the CAE for a set of latent space, `n_lat` dimensions and saves the results to `hyperparameter_tuning.txt`. The optimal `n_lat` was selected through a trade-off between NRMSE and its size. 
+
 
 ### Testing
-In `model_test.py` the convolutional autoencoder model's performance is tested. The testing dataset is loaded to `U_test`, batched and passed through the model. The predicted values are then compared to the actual test values using an NRMSE metric.
-
-The loop for each epoch contains the loading of encoder and decoder using the `load_encoder` and `load_decoder` functions from `prepare_data.py`, the NRMSE calculation is done using `compute_nrmse` from `metrics.py`.
+In `model_test.py` the convolutional autoencoder model's performance is evaluated. The testing dataset is loaded to `U_test`, batched and passed through the model. The predicted values are then compared to the actual test values using an NRMSE metric. This is done by the loading of encoder and decoder using the `load_encoder` and `load_decoder` functions from `helpers.py`, the NRMSE calculation is done using `compute_nrmse` from `metrics.py`.
 
 
 ### Encoding and decoding
 The encoding and decoding of the data are done using the two functions from `encode.py` and `decode.py`. The encoder part uses the pre-trained model to lower the data dimension to the set latent space. The decoder loads the encoded data and decodes it back to its original shape.
 
-During encoding, the model is loaded and the dataset is batched according to the preset `batch_size` and `n_batches`. Subsequently, the encoded dataset is created and saved in a HDF5 file.
+During encoding, the model is loaded and the dataset is batched according to the preset `batch_size` and `n_batches` to be passed through the encoder. Subsequently, the encoded dataset saved in an unbatched format for general use and saved to a HDF5 file.
 
-The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, and decodes it to the original dimension and shape. Finally, the decoded dataset is created and saved to another HDF5 file for visualization.
+The decoding is the reverse process of encoding, which loads the pre-trained decoder modules, takes the encoded data, batches it, and decodes it to the original dimension and shape. Finally, the decoded dataset is created and saved to another HDF5 file for visualization.
 
 ## Clustering
 Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
