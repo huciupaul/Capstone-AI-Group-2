@@ -30,7 +30,7 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
     dec_mods = load_decoder(dec_path, n_lat)
 
     # Load velocity data
-    U_enc = load_encoded_data(data_path, field=field)[:,:] 
+    U_enc = load_encoded_data(data_path, field=field)
     batch_size = 1
     n_batch = len(U_enc) // batch_size
 

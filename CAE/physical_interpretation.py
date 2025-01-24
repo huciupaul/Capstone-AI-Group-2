@@ -48,7 +48,10 @@ def plot_physical_interpretation(U_test, N_lat):
     plt.savefig(f'./physical_interpretation_{N_lat}.pdf')
     plt.show()
 
-path = r'CAE\Data\48_Decoded_data_Re40_10.h5'
+path = r'.\Data\48_Decoded_data_Re40_10_Precursor_Centroids.h5'
+#path = r'.\Data\48_Decoded_data_Re40_10_Extreme_Centroids.h5'
+#path = r'.\Data\48_Decoded_data_Re40_10_Normal_Centroids.h5'
+
 with h5py.File(path, 'r') as hf:
     print(list(hf.keys()))
     U = np.array(hf.get('U_dec'), dtype=np.float32)
