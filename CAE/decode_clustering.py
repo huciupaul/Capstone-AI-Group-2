@@ -31,7 +31,7 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
 
     # Load velocity data
     U_enc = load_encoded_data(data_path, field=field)[:,:] 
-    batch_size = 19
+    batch_size = 10
     n_batch = len(U_enc) // batch_size
 
     U_enc = batch_data(U_enc, batch_size, n_batch)  # U_enc shape after batching: (n_batch, batch_size, latent_dim)
@@ -52,7 +52,7 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
     print('U_enc shape:', U_enc.shape)  # Expected: (n_batch, batch_size, latent_dim)
 
     # Save decoded data with time field
-    enc_file = f'./Data/48_Decoded_data_Re40_{n_lat}.h5'
+    enc_file = f'./Data/48_Decoded_data_Re40_{n_lat}_{field}.h5'
     with h5py.File(enc_file, 'w') as hf:
         hf.create_dataset('U_dec', data=U_dec)  # Saves the batched encoded data
 
@@ -62,5 +62,7 @@ n_lat = 10
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = f"./Data/Precursor_Centroids.h5" #path to encoded data
-decodeclustering(n_lat, enc_data_path, field='Precursor_Centroids')
+enc_data_path = f"./Data/Cluster_Centroids.h5" #path to encoded data
+decodeclustering(n_lat, enc_data_path, field='Precursor_Centroids') 
+decodeclustering(n_lat, enc_data_path, field='Extreme_Centroids') 
+decodeclustering(n_lat, enc_data_path, field='Normal_Centroids') 
