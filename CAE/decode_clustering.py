@@ -62,5 +62,5 @@ n_lat = 10
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = f"./Data/48_Encoded_data_Re40_10.h5" #path to encoded data
+enc_data_path = f"./Data/Precursor_Centroids.h5" #path to encoded data
 decodeclustering(n_lat, enc_data_path, field='Precursor_Centroids')

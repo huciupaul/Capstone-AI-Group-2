@@ -28,7 +28,7 @@ def encode(n_lat):
     enc_mods = load_encoder(enc_path, n_lat)
 
     # load data
-    data_path = f"./Data/Generated_data_150000.h5" 
+    data_path = f"./Data/Generated_data.h5" 
     U = load_data(data_path)
 
     # batch data

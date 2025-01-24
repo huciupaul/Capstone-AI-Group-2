@@ -21,7 +21,7 @@ else:
 
 # Path to the dataset
 fld = './Data/' #Path to folder with generated data
-data_path = fld + 'Generated_data_150000.h5' #Generated Data file name
+data_path = fld + 'Generated_data.h5' #Generated Data file name
 
 # Load data
 U = load_data(data_path, data_len=120000, downsample=4, transient=0)
