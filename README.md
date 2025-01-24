@@ -83,7 +83,7 @@ The CAE consists of an encoder and a decoder, as implemented in ["Predicting tur
 
 The data is split sequentially into 80% training, 10% validation, and 10% tuning to preserve the natural order of the turbulence flow states. This prevents data leakage, ensuring the model does not learn from future states and generalizes effectively to unseen data.
 
-Batching was done separately for the training, validation and test dataset. For each dataset, a batch is formed by taking one snapshot every `batch_size` snapshots, ensuring the sequences within the respective datasets are removed. This helps with maintaining diversity in the batches and discouraging the model from learning sequential patterns so that it generalizes well.
+Batching was done separately for the training, validation and test datasets. For each dataset, a batch is formed by taking one snapshot every `batch_size` snapshots, ensuring the sequences within the respective datasets are removed. This helps with maintaining diversity in the batches and discouraging the model from learning sequential patterns so that it generalizes well.
 
 The original training set used has 24 000 samples, but this was reduced in the repository for easy testing.
 
