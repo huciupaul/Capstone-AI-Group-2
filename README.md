@@ -111,24 +111,24 @@ To run the clustering process:
 
 
 ### Alternative clustering methods
-To compare the modularity based clustering with other, more common clustering methods, this repository implements three alternative clustering methods, 'K-Means', 'Agglomerative clustering' and 'DBSCAN'. Which can be found in 'clustering/Alternative Clustering/Alternative clusters.py', 'clustering/Alternative Clustering/Alternative clusters agglomerative.py', 'clustering/Alternative Clustering/Alternative clusters density.py' respectively.
+To compare the modularity based clustering with other, more common clustering methods, this repository implements three alternative clustering methods, 'K-Means', 'Agglomerative clustering' and 'DBSCAN'. Which can be found in `clustering/Alternative Clustering/Alternative clusters.py`, `clustering/Alternative Clustering/Alternative clusters agglomerative.py`, `clustering/Alternative Clustering/Alternative clusters density.py` respectively.
 These clustering methods are applied to a normalized and reduced subset to reduce computing times.
 
-### K-Means Clustering
+## K-Means Clustering
 - Partitions data into a user-defined number of clusters (k)
 - Identifies extreme events by detecting points deviating significantly from the mean (±5 standard deviations)
 
-### Agglomerative Clustering
+## Agglomerative Clustering
 - A hierarchical clustering method that partitions data into a user-defined number of clusters with the 'ward linkage' approach.
 - Groups data into clusters based on similarity
 - Identifies extreme events by detecting points deviating significantly from the mean (±5 standard deviations)
 
-### DBSCAN Clustering
+## DBSCAN Clustering
 - Density-based clustering method that groups points based on local density
 - Treats outliers as noise.
 - Identifies extreme events by detecting points deviating significantly from the mean (±5 standard deviations)
 
-*** Visualisation
+## Visualisation
 Each file plots the clusters found, as well as the extreme events in a 2D scatter plot, showing the x_extreme against the x_0 value.
 
 
