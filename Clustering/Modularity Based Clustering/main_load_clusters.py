@@ -115,49 +115,62 @@ instances_list.append(instances)
 # =============================================================================
 # Save validated precursor centroids to HDF5
 # =============================================================================
-def save_valid_precursor_centroids(clusters, x_clusters, precursors_t, extreme_events_t, instances, output_file):
+def save_valid_precursor_centroids(
+    clusters, x_clusters, precursors_t, extreme_events_t, instances, output_file, num_centroids_saved=None
+):
     """
     Save the centroids of precursor clusters that directly contribute to the exact number of valid precursor-to-extreme transitions.
+    Additionally, save random extreme and normal (non-extreme, non-precursor) clusters.
     """
     validated_precursors = set()  # To store unique cluster IDs of precursors leading to valid transitions
-    transition_mapping = []  # For debugging: Track precursor-to-extreme transitions
-
     count_transitions = 0  # Track the number of valid transitions
+
     for extreme_idx in extreme_events_t:
         # Find the last precursor that led to this extreme event
         prec_idx = max([t for t in precursors_t if t < extreme_idx], default=None)
         if prec_idx is not None and count_transitions < instances:
-            cluster_id = int(x_clusters[prec_idx].item()) 
-            if cluster_id not in validated_precursors: 
+            cluster_id = int(x_clusters[prec_idx].item())
+            if cluster_id not in validated_precursors:
                 validated_precursors.add(cluster_id)
-                transition_mapping.append((prec_idx, cluster_id, extreme_idx))  # Debug info
                 count_transitions += 1
-
-    # Debugging: Print validated precursor clusters and transitions
-    #print(f"Validated precursors (unique cluster IDs): {list(validated_precursors)}")
-    #print(f"Transition mappings (precursor -> extreme): {transition_mapping}")
 
     # Collect centroids of validated precursors
     precursor_centroids = []
+    extreme_centroids = []
+    normal_centroids = []
+
     for cluster in clusters:
-        cluster_id = int(cluster.nr.item())  
+        cluster_id = int(cluster.nr.item())
         if cluster_id in validated_precursors:
             precursor_centroids.append(cluster.center[:-1])
+        elif cluster.is_extreme:  # Extreme cluster
+            extreme_centroids.append(cluster.center[:-1])
+        elif not cluster.is_extreme and cluster_id not in validated_precursors:  # Normal cluster
+            normal_centroids.append(cluster.center[:-1])
 
     precursor_centroids = np.array(precursor_centroids)
+    extreme_centroids = np.array(extreme_centroids)
+    normal_centroids = np.array(normal_centroids)
+
+    # Limit the number of centroids saved if num_centroids_saved is specified
+    if num_centroids_saved is not None:
+        precursor_centroids = precursor_centroids[:num_centroids_saved]
+        extreme_centroids = extreme_centroids[:num_centroids_saved]
+        normal_centroids = normal_centroids[:num_centroids_saved]
 
     # Save to HDF5
-    with h5py.File(output_file, 'w') as hf:
-        hf.create_dataset('Precursor_Centroids', data=precursor_centroids)
+    with h5py.File(output_file, "w") as hf:
+        hf.create_dataset("Precursor_Centroids", data=precursor_centroids)
+        hf.create_dataset("Extreme_Centroids", data=extreme_centroids)
+        hf.create_dataset("Normal_Centroids", data=normal_centroids)
 
     # Print summary
     print(f"Saved {len(precursor_centroids)} unique precursor centroids to {output_file}")
-    #print(f"Average time from precursor to extreme: {avg_time} seconds")
-    #print(f"Number of valid precursor-to-extreme transitions: {instances}")
+    print(f"Saved {len(extreme_centroids)} unique extreme centroids to {output_file}")
+    print(f"Saved {len(normal_centroids)} unique normal centroids to {output_file}")
 
 
-
-output_file = fld + "Precursor_Centroids.h5"
+output_file = fld + "Cluster_Centroids.h5"
 precursors_t = np.where(is_extreme == 1)[0]  # Indices of precursor states
 extreme_events_t = np.where(is_extreme == 2)[0]  # Indices of extreme states
 
@@ -167,7 +180,8 @@ save_valid_precursor_centroids(
     precursors_t,  
     extreme_events_t, 
     instances,  
-    output_file  
+    output_file,
+    num_centroids_saved=10  #how many centroids to save, 'None' to save all of them
 )
 # =============================================================================
 # Phase space plot
