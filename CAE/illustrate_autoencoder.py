@@ -20,7 +20,6 @@ def wrap_text(text, width=25):
 def illustrate_autoencoder(N_lat, U_test):
     path = './Data/48_RE40_'+str(N_lat)
     enc_mods_test, dec_mods_test = load_encoder(path, N_lat), load_decoder(path, N_lat)
-    # U_test = get_u_test_for_illustration()
 
     # grid
     X = np.linspace(0, 2 * np.pi, N_x) 
