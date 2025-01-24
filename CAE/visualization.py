@@ -8,7 +8,7 @@ from autoencoder import cae_model
 from helpers import load_decoder, load_encoder
 
 
-def plot_training_curve(vloss_plot: np.ndarray, tloss_plot: np.ndarray, epoch: int, n_lat) -> None:
+def plot_training_curve(vloss_plot: np.ndarray, tloss_plot: np.ndarray, save_path, epoch: int, n_lat) -> None:
     """
     Plots training and validation loss over epochs.
 
@@ -47,7 +47,7 @@ def plot_training_curve(vloss_plot: np.ndarray, tloss_plot: np.ndarray, epoch: i
     plt.legend()
 
     # Save and show the plot
-    plt.savefig(f'MSE_{epoch}_{n_lat}.pdf')
+    plt.savefig(save_path)
     plt.show()
 
 
@@ -127,7 +127,7 @@ def plot_hyperparameter_tuning(txt_file: str) -> None:
     plt.xticks(n_lat_list)
     plt.grid(True)
     plt.legend()
-    plt.savefig('hyperparameter_tuning.pdf')
+    plt.savefig('./Plots/Tuning/hyperparameter_tuning.pdf')
 
     # Show the plot
     plt.show()
@@ -141,7 +141,7 @@ def wrap_text(text, width=25):
 def illustrate_autoencoder(N_lat, U_test):
     path = './Data/48_RE40_' + str(N_lat)
     enc_mods_test, dec_mods_test = load_encoder(path, N_lat), load_decoder(path, N_lat)
-    # U_test = get_u_test_for_illustration()
+
 
     # grid
     X = np.linspace(0, 2 * np.pi, N_x)

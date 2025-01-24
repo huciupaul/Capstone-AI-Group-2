@@ -85,8 +85,9 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
 
    # Early stopping and learning rate adjustment hyperparameters
     N_check = 5             # Frequency (in epochs) to check convergence and validation loss
-    patience = 31           # Stop training if no validation loss improvement for 'patience' epochs
+    patience = 10         # Stop training if no validation loss improvement for 'patience' epochs
     last_save = patience    # Epoch where the best model was last saved
+    last_save_plot = 20
 
     N_lr = 10              # Number of epochs to wait before considering learning rate reduction
     lrate_update = True     # Whether to enable learning rate adjustments
@@ -108,8 +109,11 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
         # Early stopping check
         if epoch - last_save > patience:
             print(f'Early stopping at epoch {epoch}')
-            vloss_plot, tloss_plot = read_mse_plot(f"mse_plot_{n_lat}_{last_save}.h5")
-            plot_training_curve(vloss_plot, tloss_plot, epoch=last_save, n_lat=n_lat)
+            folder = r"./Plots/Training_Plot_MSE/"
+            path = folder + f"mse_plot_{n_lat}_{last_save_plot}.h5"
+            plot_path = folder + f"mse_plot_{n_lat}_{last_save_plot}.pdf"
+            vloss_plot, tloss_plot = read_mse_plot(path)
+            plot_training_curve(vloss_plot, tloss_plot, plot_path, epoch=last_save_plot, n_lat=n_lat)
             break
 
         # Perform gradient descent for all the batches every epoch
@@ -181,11 +185,12 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
         # Plot every N_plot epochs
         if (epoch % N_plot == 0) and epoch != 0:
             # Ensure the directory exists
-            folder_path = os.path.join('CAE', 'Training curve plots')
+            folder_path = r'./Plots/Training_Plot_MSE'
             os.makedirs(folder_path, exist_ok=True)
             
             # Save the plot
             save_path = os.path.join(folder_path, f'mse_plot_{n_lat}_{epoch}.h5')
             save_mse_plot(vloss_plot, tloss_plot, save_path)
+            last_save_plot = epoch
 
     return enc_mods, dec_mods

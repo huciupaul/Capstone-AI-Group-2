@@ -51,7 +51,7 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
     print("Shape of the decoded output:", U_dec.shape)
 
     # save decoded data
-    dec_file = f'./Data/48_Decoded_data_Re40_{n_lat}.h5'
+    dec_file = f'./Data/General_48_Decoded_data_Re40_{n_lat}.h5'
     hf = h5py.File(dec_file,'w')
     hf.create_dataset('U_dec',data=U_dec)
     hf.close()
@@ -59,5 +59,5 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
 
 
 n_lat = 10
-
+decode(n_lat = 10, data_path = f'./Data/General_48_Encoded_data_Re40_10.h5', field='U_enc')
 

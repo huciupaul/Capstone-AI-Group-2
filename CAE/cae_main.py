@@ -59,7 +59,7 @@ for i, layer in enumerate(enc_mods[-1].layers):
 dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
 # train the model
-n_epochs = 30
+n_epochs = 70
 enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, N_lat)
 
 
@@ -89,3 +89,4 @@ print("Average NRMSE test:", nrmse_test.numpy(), "\n")
 # Plot ground truth and autoencoded snapshots for illustrative purposes
 U_test = U_test[0]  # take the first batch
 illustrate_autoencoder(N_lat, U_test)
+

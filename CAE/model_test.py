@@ -17,12 +17,12 @@ U_test: np.ndarray = load_data(data_path, data_len=15000, downsample=1, transien
 # Expected shape: (num_samples, N_x, N_y, n_comp)
 
 batch_size: int = 250
-n_batches: int = 20
+n_batches: int = len(U_test) // batch_size
 U_test = batch_data(U_test, b_size=batch_size, n_batches=n_batches)
 # After batching, shape: (n_batches, batch_size, N_x, N_y, n_comp)
 
 # File to store NRMSE results
-txtfile: str = "test_nrmse.txt"
+txtfile: str = "./Plots/Tuning/test_nrmse.txt"
 with open(txtfile, "w") as f:
     f.write("n_lat,nrmse_test\n")  # CSV header
 
@@ -46,9 +46,9 @@ with open(txtfile, "w") as f:
     print(f"Average NRMSE test for n_lat {n_lat_opt}:", nrmse_test.numpy())
 
     # Save results to file
-    f.write(f"{n_lat},{nrmse_test}\n")  # Append NRMSE results
+    f.write(f"{n_lat_opt},{nrmse_test}\n")  # Append NRMSE results
 
 # plot comparison figure
-illustrate_autoencoder(n_lat_opt, U_test)
+illustrate_autoencoder(n_lat_opt, U_test[0])
 
 

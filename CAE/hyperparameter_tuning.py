@@ -6,6 +6,7 @@ from constants import *
 import numpy as np
 import tensorflow as tf
 from visualization import plot_hyperparameter_tuning
+import os
 
 # Suppress TensorFlow logs
 tf.get_logger().setLevel('ERROR')
@@ -25,13 +26,13 @@ fld = './Data/' #Path to folder with generated data
 data_path = fld + 'Generated_data.h5' #Generated Data file name
 
 # Load data
-U = load_data(data_path, data_len=120000, downsample=4, transient=0)
+U = load_data(data_path, data_len=800, downsample=4, transient=0)
 
 # Define training, validation, and test batches
-batch_size = 300
+batch_size = 50
 n_batches = len(U) // batch_size
-train_batches = int(n_batches*0.8)
-val_batches = int(n_batches*0.2)
+train_batches = int(n_batches*0.75)
+val_batches = int(n_batches*0.25)
 
 batches = (train_batches, val_batches)
 U_train, U_val = split_batch_data(U, batch_size=batch_size, batches=batches)
@@ -58,7 +59,7 @@ def tune(U_train, U_val, n_lat):
     dec_mods = create_dec_mods(conv_out_size, conv_out_shape)
 
     # train the model
-    n_epochs = 1000
+    n_epochs = 70
     enc_mods, dec_mods = training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat)
 
     U_pred_train = np.zeros((train_batches, batch_size, N_x, N_y, n_comp))
@@ -78,8 +79,11 @@ def tune(U_train, U_val, n_lat):
     return nrmse_train, nrmse_val
 
 
-n_lats = [4, 8, 10, 12, 32, 64]
-hfile = "hyperparameter_tuning.txt"
+n_lats = [4, 8]
+path_folder = r'./Plots/Tuning/'
+os.makedirs(path_folder, exist_ok=True)
+hfile = path_folder + "hyperparameter_tuning.txt"
+
 with open(hfile, "w") as f:
     f.write("n_lat,nrmse_train,nrmse_val\n")  # Header
     for n_lat in n_lats:
@@ -87,5 +91,6 @@ with open(hfile, "w") as f:
         nrmse_train, nrmse_val = tune(U_train, U_val, n_lat)
 
         f.write(f"{n_lat},{nrmse_train},{nrmse_val}\n")  # Write as CSV row
+
 
 plot_hyperparameter_tuning(hfile)

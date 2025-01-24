@@ -32,7 +32,7 @@ def encode(n_lat):
     U = load_data(data_path)
 
     # batch data
-    batch_size = 200
+    batch_size = 50
     n_batch = len(U) // batch_size
     U = batch_data(U, batch_size, n_batch)
 
@@ -44,8 +44,10 @@ def encode(n_lat):
     print(U_enc.shape)
 
     # save encoded data
-    enc_file = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
-    hf = h5py.File(enc_file, 'w')
+    enc_data_file = f'./Data/General_48_Encoded_data_Re40_{n_lat}.h5'
+    hf = h5py.File(enc_data_file, 'w')
     hf.create_dataset('U_enc', data=U_enc)
     hf.close()
-    print(f"Successfully encoded data saved in {enc_file}")
+    print(f"Successfully encoded data saved in {enc_data_file}")
+    
+encode(10)
