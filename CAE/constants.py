@@ -13,7 +13,7 @@ n_dec = [24, 12, 6, 3]  # number of filters decoder
 p_dec = 1               # padding in the first decoder layer
 
 n_hidden = 12   # width of the fc prior to bottleneck
-p_crop = 48
+p_crop = 48     # crop size of the output equal to input size
 n_comp = 2      # n components of the input field
 N_x = 48        # n mesh points x-axis
 N_y = 48        # n mesh points y-axis
