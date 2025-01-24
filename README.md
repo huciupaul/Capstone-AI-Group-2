@@ -124,7 +124,7 @@ Run the files as follows according to the intended process.
 
 
 ## Modularity-based Clustering
-Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
+Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot, thus completing requirement M4 and S1. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
 
 ### Implementation
 The clustering implementation is distributed across multiple scripts:
@@ -183,7 +183,7 @@ To run the clustering process:
 
 ### Alternative clustering methods
 To compare the modularity based clustering with other, more common clustering methods, this repository implements three alternative clustering methods, 'K-Means', 'Agglomerative clustering' and 'DBSCAN'. Which can be found in `clustering/Alternative Clustering/Alternative clusters.py`, `clustering/Alternative Clustering/Alternative clusters agglomerative.py`, `clustering/Alternative Clustering/Alternative clusters density.py` respectively.
-These clustering methods are applied to a normalized and reduced subset to reduce computing times.
+These clustering methods are applied to a normalized and reduced subset to reduce computing times. Thesse alternative clustering methods complete requirement C2.
 
 ## K-Means Clustering
 - Partitions data into a user-defined number of clusters (k)
