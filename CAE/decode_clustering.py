@@ -31,7 +31,7 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
 
     # Load velocity data
     U_enc = load_encoded_data(data_path, field=field)[:,:] 
-    batch_size = 10
+    batch_size = 1
     n_batch = len(U_enc) // batch_size
 
     U_enc = batch_data(U_enc, batch_size, n_batch)  # U_enc shape after batching: (n_batch, batch_size, latent_dim)
@@ -52,8 +52,8 @@ def decodeclustering(n_lat: int, data_path: str, field='U_enc') -> None:
     print('U_enc shape:', U_enc.shape)  # Expected: (n_batch, batch_size, latent_dim)
 
     # Save decoded data with time field
-    enc_file = f'./Data/48_Decoded_data_Re40_{n_lat}_{field}.h5'
-    with h5py.File(enc_file, 'w') as hf:
+    denc_file = f'./Data/48_Decoded_data_Re40_{n_lat}_{field}.h5'
+    with h5py.File(denc_file, 'w') as hf:
         hf.create_dataset('U_dec', data=U_dec)  # Saves the batched encoded data
 
 
