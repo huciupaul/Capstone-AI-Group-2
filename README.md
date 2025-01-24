@@ -124,7 +124,7 @@ Run the files as follows according to the intended process.
 
 
 ## Modularity-based Clustering
-Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot, thus completing requirement M4 and S1. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
+Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot, **thus completing requirements M4 and S1**. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
 
 ### Implementation
 The clustering implementation is distributed across multiple scripts:
@@ -142,7 +142,7 @@ The clustering algorithm takes preprocessed velocity field data as input, applie
 Key features of the clustering implementation include:
 1. **Spectral Clustering**: Uses spectral methods to partition the network into communities. The largest eigenvalues and eigenvectors of the modularity matrix are computed, which identifies optimal divisions of the network. This process iteratively maximizes the modularity metric.
 2. **Refinement**: The clustering process includes refinement steps to enhance the modularity and ensure well-defined community structures. The algorithm avoids over-segmentation by stopping further division when the modularity metric no longer improves. 
-3. **Extreme and Precursor Cluster Identification**: The clustering framework distinguishes between normal, precursor and extreme clusters. **This fulfills requirement M4**
+3. **Extreme and Precursor Cluster Identification**: The clustering framework distinguishes between normal, precursor and extreme clusters.
 4. **Visualization**: Results are visualized as:
    - **Phase space plots** that display the distribution of data points and their transitions between clusters. 
    - **Tessellated phase space plots** which highlights the tessellation of phase space into discrete clusters.
@@ -152,7 +152,7 @@ Key features of the clustering implementation include:
    - It calculates metrics such as:
      - **Maximum Transition Probability**: The likelihood of transitioning from one cluster to another.
      - **Shortest Path**: The minimum number of transitions needed to reach an extreme cluster.
-     - **Average Transition Time**: The mean time taken to transition between clusters. **This fulfills requirement S1**
+     - **Average Transition Time**: The mean time taken to transition between clusters.
 
 ---
 
@@ -161,6 +161,7 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 - Computes the average time between precursor and extreme events.
 - Identifies false positives and negatives in precursor detection.
 - Generates detailed visualizations to understand the dynamics of the identified clusters.
+Additionally, `physical_interpretation.py` from the CAE folder deodes latent space variables, inlcuding the centroids of normal, precursor and extreme clusters, **in accordance with requirement C1**
 
 ---
 
@@ -177,13 +178,13 @@ To run the clustering process:
 7. To visualize the decoded precursor cluster plot, run `physical_interpretation.py` from CAE
 
 ### Remark
-`main_with_loop_only_features.py` encounters a value error (ex: 'ValueError: 1411845100 is not in list') when running in a traditional IDE. Running in a virtual linux enviroment (we used Ubuntu terminal) resolves this error.
+The file `main_with_loop_only_features.py` encounters a value error (ex: 'ValueError: 1411845100 is not in list') when running in a traditional IDE. Running in a virtual linux enviroment (we used Ubuntu terminal) resolves this error.
 ---
 
 
 ### Alternative clustering methods
 To compare the modularity based clustering with other, more common clustering methods, this repository implements three alternative clustering methods, 'K-Means', 'Agglomerative clustering' and 'DBSCAN'. Which can be found in `clustering/Alternative Clustering/Alternative clusters.py`, `clustering/Alternative Clustering/Alternative clusters agglomerative.py`, `clustering/Alternative Clustering/Alternative clusters density.py` respectively.
-These clustering methods are applied to a normalized and reduced subset to reduce computing times. Thesse alternative clustering methods complete requirement C2.
+These clustering methods are applied to a normalized and reduced subset to reduce computing times. **These alternative clustering methods complete requirement C2**.
 
 ## K-Means Clustering
 - Partitions data into a user-defined number of clusters (k)
