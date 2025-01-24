@@ -13,7 +13,8 @@ Or for anaconda users with:
 conda env create -f environment.yaml
 ```
 
-For clustering, the relevant depedencies can be found at `clustering/conda_pack.txt` and `clustering/tf_package_list.txt`.
+For clustering, the relevant depedencies can be found at `clustering/requirements_clustering.txt`. 
+This can be installed by 'pip install -r /path/to/requirements_clustering.txt'
 
 
 ## Data generation
@@ -51,7 +52,7 @@ During ecoding, the model is loaded and the dataset is batched according to the 
 The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, and decodes it batch by batch to the original dimension and shape. Finally, the decoded dataset is created and saved to another HDF5 file for visualization.
 
 ## Clustering
-Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. 
+Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
 
 ### Implementation
 The clustering implementation is distributed across multiple scripts:
@@ -87,10 +88,12 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 
 ### Usage
 To run the clustering process:
-1. Ensure the dependencies listed in `clustering/conda_pack.txt` and `clustering/tf_package_list.txt` are installed.
+1. Ensure the dependencies listed in `clustering/requirements_clustering.txt` are installed.
 2. Use **`main_with_loop_only_features.py`** to execute the clustering pipeline. 
-3. Analyze the saved clusters with **`main_load_clusters.py`** for further insights.
+3. Analyze the saved clusters with **`main_load_clusters.py`** for further insights and to save the precursor cluster centroids.
 
+### Remark
+`main_with_loop_only_features.py` encounters a value error (ex: 'ValueError: 1411845100 is not in list') when running in a traditional IDE. Running in a virtual linux enviroment (we used Ubuntu terminal) resolves this error.
 ---
 
 

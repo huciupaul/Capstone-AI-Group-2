@@ -3,6 +3,7 @@
 Created on Tue Sep 19 10:35:33 2023
 
 @author: floris
+Edited by Capstone Group 2
 """
 
 import numpy as np

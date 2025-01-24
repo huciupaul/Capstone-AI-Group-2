@@ -3,6 +3,7 @@
 Created on Tue Oct 24 11:13:57 2023
 
 @author: floris
+Edited by Capstone Group 2
 """
 import numpy as np
 # import cokurtosis_functions as cofunc

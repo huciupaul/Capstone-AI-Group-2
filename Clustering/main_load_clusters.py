@@ -2,7 +2,7 @@
 """
 This is a script that illustrates how to load a dataset and analyze it using already identified precursor clusters
 @author: akdoan
-edited for Capstone Project by Rafael B. Ribeiro
+Edited by Capstone Group 2
 """
 
 import numpy as np
