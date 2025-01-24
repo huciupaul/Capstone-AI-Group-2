@@ -10,12 +10,14 @@ from prepare_data import load_encoded_data, batch_data
 import numpy as np
 import h5py
 
-def decode(n_lat):
+def decode(n_lat: int, data_path: str, field='U_enc'):
     """
     Decodes encoded velocity data using a pre-trained decoder model.
 
     Args:
         n_lat (int): The number of latent space dimensions.
+        data_path (str): Path to the encoded data
+        field (str): Name of the field where encoded data is saved
 
     Output:
         Saves the decoded velocity data (`U_dec`) an HDF5 file.
@@ -25,11 +27,10 @@ def decode(n_lat):
     dec_mods = load_decoder(dec_path, n_lat)
 
     # load encoded non-batched data
-    enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
-    U_enc = load_encoded_data(enc_data_path)
+    U_enc = load_encoded_data(data_path, field)
 
     # batch the encoded data
-    batch_size = 10
+    batch_size = 21
     n_batch = len(U_enc) // batch_size
     U_enc = batch_data(U_enc, batch_size, n_batch)
 
@@ -55,5 +56,10 @@ def decode(n_lat):
     hf.close()
     print(f"successfully decoded data saved in {dec_file}")
 
-# n_lat = 10
-# decode(n_lat)
+n_lat = 10
+
+# default data path
+# enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
+
+enc_data_path = pass
+decode(n_lat, enc_data_path, field='Precursor_Centroids')

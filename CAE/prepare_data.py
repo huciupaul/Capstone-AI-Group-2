@@ -68,12 +68,13 @@ def load_dissip_clustering(path: str, data_len: int = 15000) -> np.ndarray:
     return D
 
 
-def load_encoded_data(path: str) -> np.ndarray:
+def load_encoded_data(path: str, field: str) -> np.ndarray:
     """
     Loads encoded data from an HDF5 file.
 
     Args:
         path (str): Path to the HDF5 file.
+        field (str): Name of the field to extract
 
     Returns:
         np.ndarray: Encoded data array.
@@ -82,35 +83,12 @@ def load_encoded_data(path: str) -> np.ndarray:
         KeyError: If 'U_enc' dataset is not found in the file.
     """
     with h5py.File(path, 'r') as hf:
-        if 'U_enc' in hf:
-            U_enc = hf['U_enc'][:]
+        if field in hf:
+            U_enc = hf[field][:]
             print(f"Successfully read U_enc from {path}")
             return U_enc
         else:
             raise KeyError(f"Dataset 'U_enc' not found in the file: {path}")
-
-
-def load_encoded_data_clustering(path: str) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Loads encoded velocity data and time from an HDF5 file.
-
-    Args:
-        path (str): Path to the HDF5 file.
-
-    Returns:
-        tuple[np.ndarray, np.ndarray]: Encoded velocity data and time array.
-
-    Raises:
-        KeyError: If 'U_enc' or 't' dataset is not found in the file.
-    """
-    with h5py.File(path, 'r') as hf:
-        if 'U_enc' in hf and 't' in hf:
-            U_enc = hf['U_enc'][:, :-1]  # Exclude the last column (assumed to be dissipation rate)
-            t = hf['t'][:]
-            print(f"Successfully read U_enc and t from {path}")
-            return U_enc, t
-        else:
-            raise KeyError(f"Datasets 'U_enc' or 't' not found in the file: {path}")
 
 
 def split_batch_data(
