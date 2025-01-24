@@ -92,7 +92,7 @@ def load_encoded_data(path: str, field: str = 'U_enc') -> np.ndarray:
 
 
 def split_batch_data(
-    U: np.ndarray, batch_size: int = 200, batches: Tuple[int, int, int] = (200, 20, 20)
+    U: np.ndarray, batch_size: int = 200, batches: Union[Tuple[int, int], Tuple[int, int, int]] = (200, 20, 20)
 ) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray, np.ndarray]]:
     """
     Splits the dataset U into training, validation, and optionally test batches.
@@ -100,7 +100,8 @@ def split_batch_data(
     Args:
         U (np.ndarray): The input dataset of shape (total_samples, height, width, channels).
         batch_size (int): The size of each batch.
-        batches (tuple[int, int, int]): Number of batches for (training, validation, testing).
+        batches (tuple[int, int, int] or tuple[int, int]): Number of batches for (training, validation, testing).
+                                                            or (training, validation)
 
     Returns:
         tuple: (U_train, U_val) or (U_train, U_val, U_test), depending on the number of batch splits.

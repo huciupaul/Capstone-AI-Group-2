@@ -5,6 +5,7 @@ from metrics import compute_nrmse
 from constants import *
 import numpy as np
 import tensorflow as tf
+from visualization import plot_hyperparameter_tuning
 
 # Suppress TensorFlow logs
 tf.get_logger().setLevel('ERROR')
@@ -86,3 +87,5 @@ with open(hfile, "w") as f:
         nrmse_train, nrmse_val = tune(U_train, U_val, n_lat)
 
         f.write(f"{n_lat},{nrmse_train},{nrmse_val}\n")  # Write as CSV row
+
+plot_hyperparameter_tuning(hfile)

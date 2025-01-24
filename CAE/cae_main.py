@@ -2,7 +2,7 @@ from autoencoder import create_enc_mods, create_dec_mods, cae_model
 from train import training_loop
 from prepare_data import split_batch_data, load_data
 from metrics import compute_nrmse
-from illustrate_autoencoder import illustrate_autoencoder
+from visualization import illustrate_autoencoder
 from constants import *
 import numpy as np
 import tensorflow as tf

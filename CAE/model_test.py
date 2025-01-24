@@ -4,13 +4,13 @@ from prepare_data import load_data, batch_data
 from constants import *  # Assumes constants like N_x, N_y, n_comp are defined
 import numpy as np
 from metrics import compute_nrmse
-
+from visualization import illustrate_autoencoder
 
 # Path to the dataset
 fld = './Data/' #Path to folder with generated data
 data_path = fld + 'Generated_data.h5' #Generated Data file name
 
-n_lats: list[int] = [10]  # List of latent space dimensions to test
+n_lat_opt: int = 10  # latent space dimensions to test
 
 # Load test dataset, 120 000 already used for training and val
 U_test: np.ndarray = load_data(data_path, data_len=15000, downsample=1, transient=120000)
@@ -26,24 +26,29 @@ txtfile: str = "test_nrmse.txt"
 with open(txtfile, "w") as f:
     f.write("n_lat,nrmse_test\n")  # CSV header
 
-    for n_lat in n_lats:
-        model_path: str = f'./Data/48_RE40_{n_lat}'  # Model directory
 
-        # Load encoder and decoder
-        enc_mods = load_encoder(model_path, n_lat)
-        dec_mods = load_decoder(model_path, n_lat)
+    model_path: str = f'./Data/48_RE40_{n_lat_opt}'  # Model directory
 
-        # Initialize storage for predicted data
-        U_pred_test: np.ndarray = np.zeros((n_batches, batch_size, N_x, N_y, n_comp))
-        # Shape: (n_batches, batch_size, N_x, N_y, n_comp)
+    # Load encoder and decoder
+    enc_mods = load_encoder(model_path, n_lat_opt)
+    dec_mods = load_decoder(model_path, n_lat_opt)
 
-        for i in range(n_batches):
-            # Forward pass through the encoder-decoder model
-            U_pred_test[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
+    # Initialize storage for predicted data
+    U_pred_test: np.ndarray = np.zeros((n_batches, batch_size, N_x, N_y, n_comp))
+    # Shape: (n_batches, batch_size, N_x, N_y, n_comp)
 
-        # Compute normalized root-mean-square error (NRMSE)
-        nrmse_test = compute_nrmse(U_test, U_pred_test)
-        print(f"Average NRMSE test for n_lat {n_lat}:", nrmse_test.numpy())
+    for i in range(n_batches):
+        # Forward pass through the encoder-decoder model
+        U_pred_test[i] = cae_model(U_test[i], enc_mods, dec_mods, is_train=False)[-1]
 
-        # Save results to file
-        f.write(f"{n_lat},{nrmse_test}\n")  # Append NRMSE results
+    # Compute normalized root-mean-square error (NRMSE)
+    nrmse_test = compute_nrmse(U_test, U_pred_test)
+    print(f"Average NRMSE test for n_lat {n_lat_opt}:", nrmse_test.numpy())
+
+    # Save results to file
+    f.write(f"{n_lat},{nrmse_test}\n")  # Append NRMSE results
+
+# plot comparison figure
+illustrate_autoencoder(n_lat_opt, U_test)
+
+

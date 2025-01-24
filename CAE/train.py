@@ -6,6 +6,7 @@ from helpers import load_opt_weights, save_cae, save_optimizer_params
 import time
 from visualization import save_mse_plot
 import os
+from visualization import read_mse_plot, plot_training_curve
 
 
 def train_step(inputs, enc_mods, dec_mods, Loss_Mse, optimizer, train=True):
@@ -107,6 +108,8 @@ def training_loop(U_train, U_val, n_epochs, enc_mods, dec_mods, n_lat):
         # Early stopping check
         if epoch - last_save > patience:
             print(f'Early stopping at epoch {epoch}')
+            vloss_plot, tloss_plot = read_mse_plot(f"mse_plot_{n_lat}_{last_save}.h5")
+            plot_training_curve(vloss_plot, tloss_plot, epoch=last_save, n_lat=n_lat)
             break
 
         # Perform gradient descent for all the batches every epoch
