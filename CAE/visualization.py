@@ -127,39 +127,3 @@ def plot_hyperparameter_tuning(txt_file: str) -> None:
 
     # Show the plot
     plt.show()
-
-
-def plot_evaluation(txt_file: str) -> None:
-    """
-    Plots the effect of different latent sizes on the test NRMSE.
-
-    Args:
-        txt_file (str): Path to a CSV file containing latent sizes and their corresponding test NRMSE values.
-
-    Output:
-        Saves and displays the latent size vs. test NRMSE plot.
-    """
-    n_lat_list = []
-    nrmse_test_list = []
-
-    with open(txt_file, "r") as f:
-        next(f)  # Skip header
-        for line in f:
-            n_lat, nrmse_test = map(float, line.strip().split(","))
-            n_lat_list.append(int(n_lat))
-            nrmse_test_list.append(nrmse_test)
-
-    # Plot
-    plt.figure(figsize=(8, 5))
-    plt.plot(n_lat_list, nrmse_test_list, marker='o', linestyle='-', color='b', label="NRMSE Test")
-
-    plt.xlabel("Latent Size (n_lat)")
-    plt.ylabel("NRMSE (Test)")
-    plt.title("Latent Size vs. Test NRMSE")
-    plt.xticks(n_lat_list)
-    plt.grid(True)
-    plt.legend()
-    plt.savefig('model_test.pdf')
-
-    # Show the plot
-    plt.show()

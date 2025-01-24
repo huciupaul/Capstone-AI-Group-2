@@ -202,7 +202,7 @@ def dec_model(encoded, dec_mods):
     Decoder module.
 
     Args:
-        encoded (tf.Tensor or nd.arrray): Encoded tensor.
+        encoded (tf.Tensor or np.ndarray): Encoded tensor.
         dec_mods (List[tf.keras.Model]): List of decoder models.
 
     Returns:
