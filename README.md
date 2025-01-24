@@ -14,19 +14,22 @@ conda env create -f environment.yaml
 ```
 
 For clustering, the relevant depedencies can be found at `clustering/requirements_clustering.txt`. 
-This can be installed by 'pip install -r /path/to/requirements_clustering.txt'
+This can be installed with:
 
+```bash 
+pip install -r /path/to/requirements_clustering.txt
+```
 
 ## Data generation
-The data generation is done using the KolSol python library, which is a Kolmogorov flow solver. The Kolmogorov flow is a two-dimensional flow that . The solver provides numerical solutions to the divergence-free Navier-Stokes equations:
+The data generation is done using the KolSol python library, which is a Kolmogorov flow solver. The Kolmogorov flow is a two-dimensional flow that . The solver provides numerical solutions to the divergence-free Navier-Stokes equations: #TODO
 
 ## Autoencoder
-The convolutional autoencoder (CAE) codebase consists of multiple python scripts. `cae_main.py` is the main file that creates the encoder and decoder modules, trains the CAE and performs validation. It calls functions from `autoencoder.py`, `constant.py`, `helpers.py`, `illustrate_atuoencoder`, `metrics.py`, `prepare_data.py`, `train.py` and `visualization.py`. Constants can be altered in `constants.py` to alter the specifics of the model architecture. Batch sizes and latent space dimension can be changed in `cae_main.py`.
+The convolutional autoencoder (CAE) codebase consists of multiple python scripts. `cae_main.py` is the main file that creates the encoder and decoder modules, trains the CAE and performs validation. It calls functions from `autoencoder.py`, `constant.py`, `helpers.py`, `illustrate_autoencoder`, `metrics.py`, `prepare_data.py`, `train.py` and `visualization.py`. Constants can be altered in `constants.py` to alter the specifics of the model architecture. Batch sizes and latent space dimension can be changed in `cae_main.py`.
 
 Model tuning is performed in `hyperparameter_tuning.py` and the output is saved to `hyperparameter_tuning.txt`. Then, for encoding and decoding the data `encode.py` and `decode.py` are for general usage. For our specific use case, we have prepared the data for modularity based clustering in `encode_clustering.py` and `decode_clustering.py`.
 
 ### Architecture
-The CAE consists of an encoder and a decoder. The encoder consists of three convolutional layers with kernel sizes (3x3), (5x5), (7x7), followed by two fully connected layers to further reduce the the dimension of the data to the desired parameter `N_lat`. The decoder architecture is the mirror image of the encoder. The architecture is inspired by the work of [Hasegawa 2020](https://doi.org/10.1007/s00162-020-00528-w). The CAE architecture is defined in `autoencoder.py`.
+The CAE consists of an encoder and a decoder. The encoder consists of three convolutional layers with kernel sizes (3x3), (5x5), (7x7), followed by two fully connected layers to further reduce the the dimension of the data to the desired parameter `N_lat`. All the layers used `tanh` activation functions. The decoder architecture is the mirror image of the encoder. The architecture of the convolutioanl layers is directly imported from [Alberto Racca CAE], which is inspired by the work of [Hasegawa 2020](https://doi.org/10.1007/s00162-020-00528-w). The CAE architecture is defined in `autoencoder.py`.
 
 ### Training and hyperparameter tuning
 In `train.py` the training loop orchestrates the optimization of the CAE. The autoencoder is trained on the snapshots of the velocity vector space. At its core, it iteratively minimizes the reconstruction error (Mean Squared Error) between the input data and the autoencoder's output using the Adam optimizer.  The loop incorporates several features, including:
