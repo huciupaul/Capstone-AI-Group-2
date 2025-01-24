@@ -31,7 +31,7 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
     U_enc = load_encoded_data(data_path, field)
 
     # batch the encoded data
-    batch_size = 21
+    batch_size = 19 #num of saved clusters
     n_batch = len(U_enc) // batch_size
     U_enc = batch_data(U_enc, batch_size, n_batch)
 
@@ -63,5 +63,5 @@ n_lat = 10
 # default data path
 # enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = 'path to enc data'
+enc_data_path = r"C:\Users\Rafael Ribeiro\Documents\GitHub\Capstone-AI-Group-2\Clustering\Data\Precursor_Centroids.h5"
 decode(n_lat, enc_data_path, field='Precursor_Centroids')
