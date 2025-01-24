@@ -17,7 +17,7 @@ For clustering, the relevant depedencies can be found at `clustering/requirement
 This can be installed with:
 
 ```bash
-'pip install -r requirements_clustering.txt'
+pip install -r 'requirements_clustering.txt'
 ```
 
 
@@ -30,7 +30,7 @@ The convolutional autoencoder (CAE) codebase consists of multiple python scripts
 Model tuning is performed in `hyperparameter_tuning.py` and the output is saved to `hyperparameter_tuning.txt`. Then, for encoding and decoding the data `encode.py` and `decode.py` are for general usage. For our specific use case, we have prepared the data for modularity based clustering in `encode_clustering.py` and `decode_clustering.py`.
 
 ### Architecture
-The CAE consists of an encoder and a decoder. It is a multiscale autoencoder, with `N_parallel = 3`, meaning there are 3 encoder modules and 3 decoder modules, with a designated kernel size each. The latent space and decoded output are obtained by summing up the outputs of the encoders and decoders respectively. Each encoder consists of `N_layers = 4` convolutional layers, followed by two fully connected layers to further reduce the the dimension of the data to the desired parameter `N_lat`. All the layers used `tanh` activation functions. The decoder architecture is the mirror image of the encoder. The architecture of the convolutioanl layers is directly imported from [Alberto Racca CAE], which is inspired by the work of [Hasegawa 2020](https://doi.org/10.1007/s00162-020-00528-w). The CAE architecture is defined in `autoencoder.py`.
+The CAE consists of an encoder and a decoder, as implemented in ["Predicting turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD), inspired by the work of [Hasegawa 2020](https://doi.org/10.1007/s00162-020-00528-w). It is a multiscale autoencoder, with `N_parallel=3`, meaning there are 3 encoder modules and 3 decoder modules, with a designated kernel size each. The latent space and decoded output are obtained by summing up the outputs of the encoder modules and decoder modules respectively. Each encoder module consists of `N_layers=4` convolutional layers. This is followed by 2 fully connected layers to further reduce the dimension of the data to the desired parameter `N_lat`, which is our implementation. Where needed, periodic padding is used to control the size of the convolution output. All the layers use `tanh` activation functions. The decoder architecture is the mirror image of the encoder. The CAE architecture is defined in `autoencoder.py`.
 
 
 ### Training and hyperparameter tuning
@@ -135,6 +135,6 @@ Each file plots the clusters found, as well as the extreme events in a 2D scatte
 ## Aknowledgments
 We would like to express our gratitude to those who contributed to the success of this project.
 
-We acknowledge the [foundational work for the autoencoder](https://github.com/MagriLab/CAE-ESN-Kolmogorov/blob/main/tutorial/CAE-ESN.ipynb) by Alberto Racca, upon which the autoencoder code is adapted. We also drew inspiration from the accompanied research paper ["Modelling spatiotemporal turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD) authored by Alberto Racca, Nguyen Anh Khoa Doan, and Luca Magri. For the modularity based clustering, ... was used as a reference.
+We acknowledge the [foundational work for the autoencoder](https://github.com/MagriLab/CAE-ESN-Kolmogorov/blob/main/tutorial/CAE-ESN.ipynb) by Alberto Racca, upon which the autoencoder code is adapted. We also drew inspiration from the accompanied research paper ["Predicting turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD) authored by Alberto Racca, Nguyen Anh Khoa Doan, and Luca Magri. For the modularity based clustering, ... was used as a reference.
 
 Special thanks to our supervisor, Nguyen Anh Khoa Doan, for providing guidance and invaluable insights throughout the project. We would also like to thank Alexandra ..., for her support and assistance. Their contributions and expertise were instrumental in the completion of this work.

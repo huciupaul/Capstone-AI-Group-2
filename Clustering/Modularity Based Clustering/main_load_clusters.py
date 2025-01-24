@@ -18,7 +18,7 @@ start_time = time.time()
 # Read the data
 # =============================================================================
 fld = "./Data/"
-fln = fld + "48_Encoded_data_Re40_10_23_01.h5" #Name of encoded file from CAE
+fln = fld + "48_Encoded_data_Re40_10.h5" #Name of encoded file from CAE
 
 hf = h5py.File(fln, 'r')
 x = np.array(hf.get('U_enc'))

@@ -25,7 +25,7 @@ start_time = time.time()
 # =============================================================================
 
 fld = "./Data/"
-fln = fld + "48_Encoded_data_Re40_10_23_01.h5"
+fln = fld + "48_Encoded_data_Re40_10.h5"
 
 hf = h5py.File(fln,'r')
 x = np.array(hf.get('U_enc'))

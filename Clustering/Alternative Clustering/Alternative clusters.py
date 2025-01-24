@@ -20,7 +20,8 @@ start_time = time.time()
 # Read the data
 # =============================================================================
 
-fln = r"C:\Users\agata\Downloads\48_Encoded_data_Re40_12_22_1.h5"
+fld = './Data/' #Path to folder with encoded data
+fln = fld + '48_Encoded_data_Re40_10' #Encoded Data file name
 
 print(os.getcwd())
 

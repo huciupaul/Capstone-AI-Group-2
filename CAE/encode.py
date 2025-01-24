@@ -24,11 +24,11 @@ def encode(n_lat):
         Saves the encoded velocity data (`U_enc`) to an HDF5 file.
     """
     # load encoder
-    enc_path = './Data/48_RE40_' + str(n_lat)  # to save model
+    enc_path = f'./Data/48_RE40_' + str(n_lat)  # to save model
     enc_mods = load_encoder(enc_path, n_lat)
 
     # load data
-    data_path = 'Data\Generated_data.h5'
+    data_path = f"./Data/Generated_data.h5" 
     U = load_data(data_path)
 
     # batch data

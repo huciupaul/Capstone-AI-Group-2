@@ -60,8 +60,4 @@ def decode(n_lat: int, data_path: str, field='U_enc'):
 
 n_lat = 10
 
-# default data path
-# enc_data_path = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
 
-enc_data_path = r"C:\Users\Rafael Ribeiro\Documents\GitHub\Capstone-AI-Group-2\Clustering\Data\Precursor_Centroids.h5"
-decode(n_lat, enc_data_path, field='Precursor_Centroids')
