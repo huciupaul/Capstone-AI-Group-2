@@ -121,9 +121,6 @@ Run the files as follows according to the intended process.
 3. To test the model, run `model_test.py`
 4. To encode velocity fields, run `encode_general.py`
 5. To decode the latent variables, run `decode_general.py`
-6. To encode specifically for the clustering module, run `encode_clustering.py`
-7. To decode data specifically from the clustering module, run `decode_clustering.py`
-
 
 
 ## Modularity-based Clustering
@@ -145,7 +142,7 @@ The clustering algorithm takes preprocessed velocity field data as input, applie
 Key features of the clustering implementation include:
 1. **Spectral Clustering**: Uses spectral methods to partition the network into communities. The largest eigenvalues and eigenvectors of the modularity matrix are computed, which identifies optimal divisions of the network. This process iteratively maximizes the modularity metric.
 2. **Refinement**: The clustering process includes refinement steps to enhance the modularity and ensure well-defined community structures. The algorithm avoids over-segmentation by stopping further division when the modularity metric no longer improves. 
-3. **Extreme and Precursor Cluster Identification**: The clustering framework distinguishes between normal, precursor and extreme clusters. 
+3. **Extreme and Precursor Cluster Identification**: The clustering framework distinguishes between normal, precursor and extreme clusters. **This fulfills requirement M4**
 4. **Visualization**: Results are visualized as:
    - **Phase space plots** that display the distribution of data points and their transitions between clusters. 
    - **Tessellated phase space plots** which highlights the tessellation of phase space into discrete clusters.
@@ -155,7 +152,7 @@ Key features of the clustering implementation include:
    - It calculates metrics such as:
      - **Maximum Transition Probability**: The likelihood of transitioning from one cluster to another.
      - **Shortest Path**: The minimum number of transitions needed to reach an extreme cluster.
-     - **Average Transition Time**: The mean time taken to transition between clusters.
+     - **Average Transition Time**: The mean time taken to transition between clusters. **This fulfills requirement S1**
 
 ---
 
