@@ -85,7 +85,7 @@ The data is split sequentially into 80% training, 10% validation, and 10% tuning
 
 Batching was done separately for the training, validation and test datasets. For each dataset, a batch is formed by taking one snapshot every `batch_size` snapshots, ensuring the sequences within the respective datasets are removed. This helps with maintaining diversity in the batches and discouraging the model from learning sequential patterns so that it generalizes well.
 
-The original training set used has 24 000 samples, but this was reduced in the repository for easy testing.
+The original training set used has 24 000 samples, loaded with `data_len=120000` and `downsample=4` in `cae_main.py`, but this was reduced in the repository for easy testing.
 
 ### Training and hyperparameter tuning
 In `train.py` the CAE model is trained on the snapshots of the velocity vector space. At its core, it iteratively minimizes the reconstruction error (Mean Squared Error) between the input data and the CAE's output using the Adam optimizer.  The loop incorporates several features, including:
