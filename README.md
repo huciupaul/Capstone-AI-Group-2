@@ -39,8 +39,16 @@ In `train.py` the training loop orchestrates the optimization of the CAE. The au
 For hyperparameter tuning, the `hyperparameter_tuning.py` script performs a grid search over a set of latent space dimensions. The script trains the CAE for each latent space size and saves the results to `hyperparameter_tuning.txt`. The best latent space size was selected through a trade-off between reconstruction error and its size. 
 
 ### Testing
+In `model_test.py` the convolutional autoencoder model's performance is evaluated. The testing dataset is loaded to `U_test` and batched. For different latent spaces, the testset is passed through the model. The predicted values are then compared to the actual test values using NRMSE as loss function.
+
+The loop for each epoch contains the loading of encoder and decoder using the `load_encoder` and `load_decoder` functions from `prepare_data.py`, the predicted set construction and the NRMSE calculation using `compute_nrmse` from `metrics.py`.
 
 ### Encoding and decoding
+The endocing and decoding of the data are done using the two functions from `encode.py` and `decode.py`. The encoder part uses the pre-trained model to lower the data dimension to the set latent space. On the other hand, the decoder inputs the encoded data and decodes it back to its original shape.
+
+During ecoding, the model is loaded and the dataset is batched according to the preset `batch_size` and `n_batches`. Subsequently, the encoded dataset is created and saved in a HDF5 file.
+
+The decoding is the reverse process of encoding, which loads the pre-trained model, takes the encoded data, batches it, and decodes it batch by batch to the original dimension and shape. Finally, the decoded dataset is created and saved to another HDF5 file for visualization.
 
 ## Clustering
 Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot. 
