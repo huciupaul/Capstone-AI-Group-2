@@ -61,13 +61,12 @@ def encodeclustering(n_lat: int, data_path: str) -> None:
     print('t shape: ', t.shape)  # Expected: (total_samples,)
 
     # Save encoded data with time field
-    enc_file = f'./data/48_Encoded_data_Re40_{n_lat}.h5'
+    enc_file = f'./Data/48_Encoded_data_Re40_{n_lat}.h5'
     with h5py.File(enc_file, 'w') as hf:
         hf.create_dataset('U_enc', data=U_enc)  # Encoded velocity data with dissipation rate
         hf.create_dataset('t', data=t)  # Time array
 
 
-# Uncomment to run the encoding function
-# n_lat: int = 10
-# data_path = r".\Data\Generated_data.h5"
-# encodeclustering(n_lat, data_path)
+n_lat: int = 10
+data_path = r".\Data\Generated_data.h5"
+encodeclustering(n_lat, data_path)

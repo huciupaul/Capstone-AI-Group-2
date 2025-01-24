@@ -21,7 +21,7 @@ pip install -r 'requirements_clustering.txt'
 ```
 
 
-## Data generation
+## Data Generation
 The data generation is done using the KolSol python library, which is a Kolmogorov flow solver. The Kolmogorov flow is a two-dimensional flow which has a periodic function applied. The solver provides numerical solutions to the divergence-free Navier-Stokes equations:
 
 $$
@@ -38,8 +38,8 @@ For the actual generation, a timestep of 0.001 is used, and the data is saved ev
 
 After the generation the data is saved as a H5 file for further analysis. Besides, the disipation rate and kinetic evergy plots are generated for visualization.
 
-### Usage
-To generate data, run `data_generator.py`
+### Usage Data Generation
+To generate data, run `data_generator.py`, the produced generated file (ex.: `Data_Generated.h5`) should be copied into the CAE data folder ( `.\CAE\Data\`).
 
 ## Multiscale Convolutional Autoencoder
 The convolutional autoencoder (CAE) codebase consists of multiple python scripts. `cae_main.py` is the main file that loads data, creates the encoder and decoder modules, trains the CAE and performs validation. It calls functions from `autoencoder.py`, `constant.py`, `helpers.py`, `illustrate_autoencoder.py`, `metrics.py`, `prepare_data.py`, `train.py` and `visualization.py`. Constants can be altered in `constants.py` to alter the specifics of the model architecture. Batch sizes and latent space dimension can be changed in `cae_main.py`.
@@ -127,14 +127,15 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 
 ### Usage for Clustering
 To run the clustering process:
-1. Ensure the dependencies listed in `clustering/requirements_clustering.txt` are installed.
-2. Ensure that file paths are defined correctly for your dataset.
-   a. The encoded data file from CAE (ex.: `48_Encoded_data_Re40_10.h5`) should be copied into the modularity based clustering data folder (`.\Modularity Based Clustering\Data\`)
-3. Use **`main_with_loop_only_features.py`** to execute the clustering pipeline. 
-4. Analyze the saved clusters with **`main_load_clusters.py`** for further insights and to save the precursor cluster centroids (Cluster centroids saved in `.\Modularity Based Clustering\Data\` as `Cluster_Centroids.h5`)
-5. To decode the `Cluster_Centroids.h5`, return to the CAE folder and run file `decode_clustering.py`. 
-   a. Before running, place a copy of `Cluster_Centroids.h5` in the CAE data folder ( `.\CAE\Data\`) 
-6. To visualize the decoded precursor cluster plot, run `physical_interpretation.py` from CAE
+1. In the CAE folder run `encode_clustering.py` to create the encoded data file for clustering (ex.: `48_Encoded_data_Re40_10.h5`). Ensure the paths to the model folder and generated data file are correct before running.
+   a. The encoded data file (ex.: `48_Encoded_data_Re40_10.h5`) from CAE Data folder (`.\CAE\Data\`) should be copied into the modularity based clustering data folder (`.\Modularity Based Clustering\Data\`)
+2. Ensure the dependencies listed in `clustering/requirements_clustering.txt` are installed.
+3. Ensure that file paths are defined correctly for your dataset in **`main_with_loop_only_features.py`** and **`main_load_clusters.py`**.
+4. Use **`main_with_loop_only_features.py`** to execute the clustering pipeline. 
+5. Analyze the saved clusters with **`main_load_clusters.py`** for further insights and to save the precursor cluster centroids (Cluster centroids saved in `.\Modularity Based Clustering\Data\` as `Cluster_Centroids.h5`)
+6. To decode the `Cluster_Centroids.h5`, return to the CAE folder and run file `decode_clustering.py`. 
+   a. Before running, place a copy of `Cluster_Centroids.h5` in the CAE data folder (`.\CAE\Data\`) 
+7. To visualize the decoded precursor cluster plot, run `physical_interpretation.py` from CAE
 
 ### Remark
 `main_with_loop_only_features.py` encounters a value error (ex: 'ValueError: 1411845100 is not in list') when running in a traditional IDE. Running in a virtual linux enviroment (we used Ubuntu terminal) resolves this error.
