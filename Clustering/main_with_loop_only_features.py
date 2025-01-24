@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy.linalg
 import clustering_func_only_features as clfunc
-import pandas as pd
+#import pandas as pd
 from scipy.integrate import simps
 import scipy.sparse as sp
 import time
@@ -24,14 +24,14 @@ start_time = time.time()
 # =============================================================================
 
 fld = "./Data/"
-fln = fld + "48_Encoded_data_Re40_8_18_1.h5"
+fln = fld + "48_Encoded_data_Re40_10_23_01.h5"
 
 hf = h5py.File(fln,'r')
 x = np.array(hf.get('U_enc'))
 t = np.array(hf.get('t'))
 hf.close()
 
-x = x[:2000,:]
+x = x[:13000,:]
 
 dt = t[1]-t[0] # time step
 tf = t[-1] # final time
@@ -53,9 +53,9 @@ instances_list = []
 
 
 # Provide the hyperparameter for the clustering
-M = 15  #Number of tessellation sections per phase space dimension
+M = 14  #Number of tessellation sections per phase space dimension
 min_clusters = 20
-max_it = 1
+max_it = 2
 
 nr_dev = 1.5 # this is used to decide on what is the definition of extreme events
 extr_dim = [x.shape[1]-1] # we assume the extreme dimension is the final one
