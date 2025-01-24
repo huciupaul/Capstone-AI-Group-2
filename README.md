@@ -9,9 +9,10 @@ The codebase is written in Python, mainly using the TensorFlow library. This pro
 ## Table of Contents
 - [Environment Requirements](#environment-requirements)
 - [Data Generation](#data-generation)
-  - [Usage - Data Generation](#usage---data-generation)
+  - [Usage for Data Generation](#usage---data-generation)
 - [Multiscale Convolutional Autoencoder (CAE)](#multiscale-convolutional-autoencoder-cae)
   - [Architecture](#architecture)
+  - [Data Split](#data-split)
   - [Training and Hyperparameter Tuning](#training-and-hyperparameter-tuning)
   - [Testing](#testing)
   - [Encoding and Decoding](#encoding-and-decoding)
@@ -50,7 +51,7 @@ pip install -r 'requirements_clustering.txt'
 
 
 ## Data Generation
-The data generation is done using the KolSol python library, which is a Kolmogorov flow solver. The Kolmogorov flow is a two-dimensional flow which has a periodic function applied. The solver provides numerical solutions to the divergence-free Navier-Stokes equations:
+The data generation is done using the KolSol python library, which is a Kolmogorov flow solver. The Kolmogorov flow is a two-dimensional flow which has a periodic function applied, commonly used to simulate simple turbulent flow. The solver provides numerical solutions to the divergence-free Navier-Stokes equations:
 
 $$
 \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} = -\nabla p + \frac{1}{Re} \Delta \mathbf{u} + \mathbf{f},
@@ -70,7 +71,7 @@ After the generation the data is saved as a H5 file for further analysis. Beside
 
 _Note: where applicable in this project, a random seed of 42 is used_
 
-### Usage - Data Generation
+### Usage for Data Generation
 To generate data, run `data_generator.py`, the produced generated file (ex.: `Data_Generated.h5`) should be copied into the CAE data folder ( `.\CAE\Data\`).
 
 ## Multiscale Convolutional Autoencoder
@@ -81,6 +82,13 @@ Hyperparameter tuning is performed in `hyperparameter_tuning.py` and the output 
 ### Architecture
 The CAE consists of an encoder and a decoder, as implemented in ["Predicting turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD), which was inspired by the work of [Hasegawa (2020)](https://doi.org/10.1007/s00162-020-00528-w). The CAE architecture is defined in `autoencoder.py`. It is a multiscale autoencoder, with `N_parallel=3`, meaning there are 3 encoder modules and 3 decoder modules, with a designated kernel size each, enabling the model to capture various spatial relations. The latent variables and decoded output are obtained by summing up the outputs of the encoder modules and decoder modules respectively. Each encoder module consists of `N_layers=4` convolutional layers. This is followed by our own implementation of 2 fully connected layers to further reduce the dimension of the data to the desired parameter `N_lat`. Periodic padding ensures consistent spatial dimensions during convolutions, preserving boundary information. All the layers use `tanh` activation functions. The decoder architecture is the mirror image of the encoder.
 
+### Data Split
+
+The data is split sequentially into 80% training, 10% validation, and 10% tuning to preserve the natural order of the turbulence flow states. This prevents data leakage, ensuring the model does not learn from future states and generalizes effectively to unseen data.
+
+Batching was done separately for the training, validation and test dataset. For each dataset, a batch is formed by taking one snapshot every `batch_size` snapshot, ensuring the sequence of the data is removed. This helps with maintaining diversity in the batches and discouraging the model from learning sequential patterns so that it generalizes well.
+
+The original training set used has 24 000 samples, but this was reduced in the repository for easy testing.
 
 ### Training and hyperparameter tuning
 In `train.py` the CAE model is trained on the snapshots of the velocity vector space. At its core, it iteratively minimizes the reconstruction error (Mean Squared Error) between the input data and the CAE's output using the Adam optimizer.  The loop incorporates several features, including:
@@ -98,9 +106,9 @@ sionality of at most 12, as fixed by the bottleneck layer of the AE architecture
 
 
 ### Testing
-In `model_test.py` the convolutional autoencoder model's performance is tested. The testing dataset is loaded to `U_test`, batched and passed through the model. The predicted values are then compared to the actual test values using an NRMSE metric.
+In `model_test.py` the convolutional autoencoder model's performance is tested. The testing dataset is loaded to `U_test`, only calling the samples at timesteps after training and validation. Then, it is batched and passed through the model. The predicted values are then compared to the actual test values using an NRMSE metric.
 
-The loop for each epoch contains the loading of encoder and decoder using the `load_encoder` and `load_decoder` functions from `helpers.py`, the NRMSE calculation is done using `compute_nrmse` from `metrics.py`.
+The loop for each epoch contains the loading of encoder and decoder using the `load_encoder` and `load_decoder` functions from `helpers.py`, the NRMSE calculation is done using `compute_nrmse` from `metrics.py`. Cross validation was not performed due to the large computation needed. This was balanced by using a fairly large test set, ensuring confidence in the results.
 
 **Thus, the (revised) requirement M3, "Must reconstruct the full flow feature from the latent space with a reconstruction error (normalized root-mean-squared error, NRMSE) below 25%," is fulfilled.**
 
@@ -124,7 +132,7 @@ Run the files as follows according to the intended process.
 
 
 ## Modularity-based Clustering
-Modularity-based clustering consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot, **thus completing requirements M4 and S1**. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
+Modularity-based clutering is employed due to its ability in handling time-series data. This implementation consists of six files in total. Main file is `main_with_loop_only_features.py` which uses functions defined in `clustering_func_only_features.py`, `modularity.py`, `spectralopt.py` and `_divide.py`. In the main file, after the clustering process is done, the clusters are saved to .npz files. These clusters then can be used in `main_load_clusters.py` which postprocesses, calculates average time between extreme and precursor events, detects false positives and negatives and plots phase space plot, tesselated phase space plot and Dissipation time series with background color plot, **thus completing requirements M4 and S1**. `main_load_clusters.py` also saves the precursor centroids that have been validated to lead to an extreme event as `Precursor_Centroids.h5` for the decoder.
 
 ### Implementation
 The clustering implementation is distributed across multiple scripts:
@@ -208,6 +216,6 @@ Each file plots the clusters found, as well as the extreme events in a 2D scatte
 ## Acknowledgments
 We would like to express our gratitude to those who contributed to the success of this project.
 
-We acknowledge the [foundational work for the autoencoder](https://github.com/MagriLab/CAE-ESN-Kolmogorov/blob/main/tutorial/CAE-ESN.ipynb) by Alberto Racca, upon which the autoencoder code is adapted. We also drew inspiration from the accompanied research paper ["Predicting turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD) authored by Alberto Racca, Nguyen Anh Khoa Doan, and Luca Magri. For the modularity based clustering, [Clustering-based Identification of Precursors of Extreme Events in Chaotic Systems](https://arxiv.org/abs/2306.16291) was used as a reference.
+We acknowledge the [foundational work for the autoencoder](https://github.com/MagriLab/CAE-ESN-Kolmogorov/blob/main/tutorial/CAE-ESN.ipynb) by Alberto Racca, upon which the autoencoder code is adapted. We also drew inspiration from the accompanied research paper ["Predicting turbulent dynamics with the convolutional autoencoder echo state network"](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/predicting-turbulent-dynamics-with-the-convolutional-autoencoder-echo-state-network/1E0F75CD94FCB3A1354A09622F8D25CD) authored by Alberto Racca, Nguyen Anh Khoa Doan, and Luca Magri. For the modularity-based clustering, ["Clustering-based Identification of Precursors of Extreme Events in Chaotic Systems"](https://arxiv.org/abs/2306.16291) by Urszula Golyska and Nguyen Anh Khoa Doan was used as a reference.
 
 Special thanks to our supervisor, Nguyen Anh Khoa Doan, for providing guidance and invaluable insights throughout the project. We would also like to thank Alexandra Neagu, for her support and assistance. Their contributions and expertise were instrumental in the completion of this work.
