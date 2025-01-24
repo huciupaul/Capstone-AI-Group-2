@@ -25,7 +25,7 @@ The codebase is written in Python, mainly using the TensorFlow library. This pro
     - [K-Means Clustering](#k-means-clustering)
     - [Agglomerative Clustering](#agglomerative-clustering)
     - [DBSCAN Clustering](#dbscan-clustering)
-- [Visualization](#visualisation)
+  - [Visualization](#visualisation)
 - [Acknowledgments](#acknowledgments)
 
 
@@ -162,7 +162,7 @@ Post-processing is handled in **`main_load_clusters.py`**, which:
 - Identifies false positives and negatives in precursor detection.
 - Generates detailed visualizations to understand the dynamics of the identified clusters.
 
-Additionally, `physical_interpretation.py` from the CAE folder deodes latent space variables, inlcuding the centroids of normal, precursor and extreme clusters, **in accordance with requirement C1**
+Additionally, `physical_interpretation.py` from the CAE folder decodes latent space variables, inlcuding the centroids of normal, precursor and extreme clusters, **in accordance with requirement C1**.
 
 ---
 
