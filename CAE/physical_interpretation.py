@@ -60,9 +60,9 @@ def plot_physical_interpretation(U_test, N_lat, centroid_type, save_path):
 
 
 # Path to the HDF5 file (comment/uncomment based on the centroids to plot)
-path = r'.\Data\48_Decoded_data_Re40_10_Precursor_Centroids.h5'
-# path = r'.\Data\48_Decoded_data_Re40_10_Extreme_Centroids.h5'
-# path = r'.\Data\48_Decoded_data_Re40_10_Normal_Centroids.h5'
+#path = r'.\Data\48_Decoded_data_Re40_10_Precursor_Centroids.h5'
+#path = r'.\Data\48_Decoded_data_Re40_10_Extreme_Centroids.h5'
+path = r'.\Data\48_Decoded_data_Re40_10_Normal_Centroids.h5'
 
 # Extract data from the HDF5 file
 with h5py.File(path, 'r') as hf:
