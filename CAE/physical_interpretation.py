@@ -25,7 +25,7 @@ def plot_physical_interpretation(U_test, N_lat, centroid_type, save_path):
     plt.rcParams["figure.figsize"] = (15, 6)  # Adjust figure size
     plt.rcParams["font.size"] = 12
 
-    fig, axes = plt.subplots(grid_rows, grid_cols, figsize=(15, 8))
+    fig, axes = plt.subplots(grid_rows, grid_cols, figsize=(15, 6))
     axes = axes.flatten()  # Flatten for easy iteration
 
     # Loop through the centroids and plot each
