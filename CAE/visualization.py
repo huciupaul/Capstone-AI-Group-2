@@ -184,7 +184,7 @@ def illustrate_autoencoder(N_lat, U_test):
         CS = ax_auto.contour(XX[0], XX[1], u_dec[:, :, 0],
                              levels=10, colors='black', linewidths=.5, linestyles='solid',
                              vmin=vmin, vmax=vmax)
-        title = wrap_text(f'Autoencoded velocity field at snapshot {i + 1}')
+        title = wrap_text(f'Decoded velocity field at snapshot {i + 1}')
         ax_auto.set_title(title, pad=20, fontsize=12)
 
         # error
